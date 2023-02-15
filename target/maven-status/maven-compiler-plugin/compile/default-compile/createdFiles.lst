@@ -12,3 +12,4 @@ com/increff/pos/spring/DBConfig.class
 com/increff/pos/controller/BrandController.class
 com/increff/pos/pojo/BrandPojo.class
 com/increff/pos/spring/SpringConfig.class
+com/increff/pos/pojo/ProductPojo.class
