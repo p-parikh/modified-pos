@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity(name = "Brand")
+@Table(indexes = {@Index(name = "brand_category_index", columnList = "brand, category")})
 public class BrandPojo {
 
     @Id

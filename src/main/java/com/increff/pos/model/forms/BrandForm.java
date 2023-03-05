@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class BrandForm {
+
     private String brand;
     private String category;
 }

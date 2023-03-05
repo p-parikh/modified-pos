@@ -18,8 +18,6 @@ public class ControllerConfig extends WebMvcConfigurerAdapter {
 
     public static final String PACKAGE_CONTROLLER = "com.increff.pos.controller";
 
-
-
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)//

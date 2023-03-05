@@ -1,6 +1,7 @@
 package com.increff.pos.dao;
 
 
+import com.increff.pos.dto.BrandDto;
 import com.increff.pos.exception.ApiException;
 import com.increff.pos.pojo.BrandPojo;
 import org.springframework.stereotype.Repository;
@@ -16,6 +17,7 @@ public class BrandDao extends AbstractDao{
     private static final String SELECT_ALL= "select b from Brand b";
     private static final String SELECT_BY_ID = "select b from Brand b where id=:id";
 
+    private static final String SELECT_ALL_ID = "select b.id from Brand b";
     private static final String SELECT_BY_BRAND_AND_CATEGORY = "select b from Brand b where b.brand=:brand and b.category=:category";
 
     public List<BrandPojo> viewAll(){
@@ -42,10 +44,15 @@ public class BrandDao extends AbstractDao{
        db_bp.setCategory((bp.getCategory()));
     }
 
-    public List<BrandPojo> getAllWithBrandCategoryCombination(String brand, String category){
+    public BrandPojo selectWithBrandAndCategory(String brand, String category) {
         TypedQuery<BrandPojo> query = em().createQuery(SELECT_BY_BRAND_AND_CATEGORY, BrandPojo.class);
         query.setParameter("brand", brand);
-        query.setParameter("category",category);
+        query.setParameter("category", category);
+        return getSingleRow(query);
+    }
+
+    public List<Integer> selectAllId(){
+        TypedQuery<Integer> query = em().createQuery(SELECT_ALL_ID, Integer.class);
         return query.getResultList();
     }
 }

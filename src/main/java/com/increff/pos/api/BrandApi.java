@@ -1,4 +1,4 @@
-package com.increff.pos.service;
+package com.increff.pos.api;
 
 import com.increff.pos.dao.BrandDao;
 import com.increff.pos.exception.ApiException;
@@ -10,13 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class BrandService {
+public class BrandApi {
 
     @Autowired
     private BrandDao brandRepo;
 
     @Transactional(readOnly = true)
-    public List<BrandPojo> getAllEntries(){
+    public List<BrandPojo> getAllEntries() {
         return brandRepo.viewAll();
     }
 
@@ -40,8 +40,14 @@ public class BrandService {
     }
 
     @Transactional(readOnly = true)
-    public List<BrandPojo> getAlByBrandCategoryCombination(String brand, String category){
-      return  brandRepo.getAllWithBrandCategoryCombination(brand, category);
+    public BrandPojo selectWithBrandAndCategory(String brand, String category) {
+        return brandRepo.selectWithBrandAndCategory(brand, category);
     }
+
+    public List<Integer> selectAllIDs(){
+        return brandRepo.selectAllId();
+    }
+
+
 
 }
