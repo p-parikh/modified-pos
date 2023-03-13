@@ -5,10 +5,12 @@ import com.increff.pos.exception.ApiException;
 import com.increff.pos.pojo.ProductPojo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class ProductApi {
 
     @Autowired
@@ -28,7 +30,10 @@ public class ProductApi {
         return productPojo_db;
     }
 
-    public void create(ProductPojo productPojo){ productDao.insert(productPojo);}
+    public Integer create(ProductPojo productPojo){
+        productDao.insert(productPojo);
+        return productPojo.getId();
+    }
 
     public void update(Integer id, ProductPojo productPojo) throws ApiException{
         productDao.update(id, productPojo);

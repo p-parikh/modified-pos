@@ -5,21 +5,23 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity(name = "Brand")
-@Table(indexes = {@Index(name = "brand_category_index", columnList = "brand, category")})
+@Table(indexes = {@Index(name = "brand_category_index", columnList = "brand, category")},
+                            uniqueConstraints = {@UniqueConstraint(name = "brand_category_uk", columnNames = {"brand","category"})})
 public class BrandPojo extends AbstractPojo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
+    @NotNull
     private String brand;
 
-    @Column(nullable = false)
+    @NotNull
     private String category;
 }

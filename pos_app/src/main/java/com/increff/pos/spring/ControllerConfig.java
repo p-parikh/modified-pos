@@ -2,6 +2,7 @@ package com.increff.pos.spring;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -23,7 +24,7 @@ public class ControllerConfig extends WebMvcConfigurerAdapter {
         return new Docket(DocumentationType.SWAGGER_2)//
                 .useDefaultResponseMessages(false)//
                 .select().apis(RequestHandlerSelectors.basePackage(PACKAGE_CONTROLLER))//
-                .paths(PathSelectors.regex("/.*"))//
+                .paths(PathSelectors.regex("/api/.*"))//
                 .build();
     }
 
@@ -33,5 +34,10 @@ public class ControllerConfig extends WebMvcConfigurerAdapter {
         registry.addResourceHandler("/swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
         registry.addResourceHandler("/static/**").addResourceLocations("/static/");
+    }
+
+    @Bean(name = "restTemplate")
+    public RestTemplate createRestTemplate() {
+        return new RestTemplate();
     }
 }

@@ -11,7 +11,7 @@ public class OrderItemForm {
 
     private String barcode;
 
-    private Long quantity;
+    private Integer quantity;
 
     private Double sellingPrice;
 }

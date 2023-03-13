@@ -4,27 +4,30 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity(name = "Orderitem")
+@Table(uniqueConstraints = {@UniqueConstraint(name="orderId_productId_uk", columnNames = {"orderId", "productId"})})
 public class OrderItemPojo extends AbstractPojo{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotNull
     private Integer orderId;
 
+    @NotNull
     private Integer productId;
 
-    private Long quantity;
+    @NotNull
+    private Integer quantity;
 
+    @NotNull
     private Double sellingPrice;
 
 }

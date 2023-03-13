@@ -11,7 +11,8 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @Entity(name = "Product")
-@Table(indexes = {@Index(name = "barcode_index", columnList = "barcode")})
+@Table(indexes = {@Index(name = "barcode_index", columnList = "barcode")},
+        uniqueConstraints = {@UniqueConstraint(name = "barcode_uk", columnNames = {"barcode"})})
 public class ProductPojo extends AbstractPojo {
 
     @Id

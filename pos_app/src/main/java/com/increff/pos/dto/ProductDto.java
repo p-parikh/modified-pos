@@ -2,12 +2,14 @@ package com.increff.pos.dto;
 
 import com.increff.commons.sheet.TsvToJson;
 import com.increff.pos.api.BrandApi;
+import com.increff.pos.api.InventoryApi;
 import com.increff.pos.api.ProductApi;
 import com.increff.pos.dto.helper.ProductDtoHelper;
 import com.increff.pos.exception.ApiException;
 import com.increff.pos.model.data.ProductData;
 import com.increff.pos.model.forms.ProductForm;
 import com.increff.pos.pojo.BrandPojo;
+import com.increff.pos.pojo.InventoryPojo;
 import com.increff.pos.pojo.ProductPojo;
 import com.increff.pos.util.FileConversionUtil;
 import org.apache.commons.io.FilenameUtils;
@@ -31,6 +33,9 @@ public class ProductDto {
 
     @Autowired
     private ProductDtoHelper productDtoHelper;
+
+    @Autowired
+    private InventoryApi inventoryApi;
 
     public List<ProductData> getAllData() throws ApiException{
         List<ProductData> resultSet = new ArrayList<>();

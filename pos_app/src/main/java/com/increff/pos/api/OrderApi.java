@@ -5,12 +5,14 @@ import com.increff.pos.exception.ApiException;
 import com.increff.pos.pojo.OrderPojo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class OrderApi {
 
     @Autowired

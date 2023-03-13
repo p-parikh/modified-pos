@@ -12,17 +12,16 @@ import java.util.List;
 
 @Log4j
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class BrandApi {
 
     @Autowired
     private BrandDao brandRepo;
 
-    @Transactional(readOnly = true)
     public List<BrandPojo> getAllEntries() {
         return brandRepo.viewAll();
     }
 
-    @Transactional(readOnly = true)
     public BrandPojo getById(Integer id) throws ApiException{
         BrandPojo db_bp = brandRepo.getById(id);
         if(db_bp == null){
@@ -31,22 +30,19 @@ public class BrandApi {
         return db_bp;
     }
 
-    @Transactional(rollbackFor = ApiException.class)
-    public void create(BrandPojo bp){
+    public Integer create(BrandPojo bp){
         brandRepo.insert(bp);
+        return bp.getId();
     }
 
-    @Transactional(rollbackFor = ApiException.class)
     public void update(Integer id, BrandPojo new_bp) throws ApiException{
         brandRepo.update(id, new_bp);
     }
 
-    @Transactional(readOnly = true)
     public BrandPojo selectWithBrandAndCategory(String brand, String category) {
         return brandRepo.selectWithBrandAndCategory(brand, category);
     }
 
-    @Transactional(readOnly = true)
     public List<Integer> selectAllIDs(){
         List<Integer> result = brandRepo.selectAllId();
         return result;
