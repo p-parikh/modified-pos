@@ -1,5 +1,6 @@
 package com.increff.pos.spring;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -18,6 +19,13 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class ControllerConfig extends WebMvcConfigurerAdapter {
 
     public static final String PACKAGE_CONTROLLER = "com.increff.pos.controller";
+
+
+    private ApplicationContext applicationContext;
+
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     @Bean
     public Docket api() {

@@ -4,7 +4,6 @@ import com.increff.pos.model.data.OrderData;
 import com.increff.pos.pojo.OrderPojo;
 import org.springframework.stereotype.Component;
 
-@Component
 public class OrderDtoHelper {
 
     public static OrderData convertToOrderData(OrderPojo orderPojo){

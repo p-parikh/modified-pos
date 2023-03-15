@@ -5,6 +5,7 @@ import com.increff.pos.dto.helper.OrderDtoHelper;
 import com.increff.pos.exception.ApiException;
 import com.increff.pos.model.data.OrderData;
 import com.increff.pos.pojo.OrderPojo;
+import com.increff.pos.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +35,8 @@ public class OrderDto {
         return OrderDtoHelper.convertToOrderData(orderApi.getByDatetime(datetime));
     }
 
-    public void create(OrderPojo orderPojo){
+    public void create(OrderPojo orderPojo) throws ApiException {
+        ValidationUtil.checkValid(orderPojo);
         orderApi.create(orderPojo);
     }
 }

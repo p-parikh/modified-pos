@@ -8,6 +8,7 @@ import com.increff.pos.model.data.BrandData;
 import com.increff.pos.model.forms.BrandForm;
 import com.increff.pos.pojo.BrandPojo;
 import com.increff.pos.util.FileConversionUtil;
+import com.increff.pos.util.ValidationUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,9 +25,6 @@ public class BrandDto {
     @Autowired
     private BrandApi brandApi;
 
-    @Autowired
-    private BrandDtoHelper brandDtoHelper;
-
     public List<BrandData> getAllData(){
         List<BrandData> resultSet = new ArrayList<>();
         for (BrandPojo bp : brandApi.getAllEntries()) {
@@ -40,20 +38,24 @@ public class BrandDto {
     }
 
     public void update(Integer id, BrandForm brandForm) throws ApiException {
+        ValidationUtil.checkValid(brandForm);
         BrandPojo brandPojo = BrandDtoHelper.convertToBrandPojo(brandForm);
-        if (brandDtoHelper.validateInput(brandPojo)) {
+        if (validateInput(brandPojo)) {
             brandApi.update(id, BrandDtoHelper.normalise(brandPojo));
         }
     }
 
-    public void create(BrandForm brandForm) throws ApiException {
+    public Integer create(BrandForm brandForm) throws ApiException {
+        ValidationUtil.checkValid(brandForm);
         BrandPojo brandPojo = BrandDtoHelper.convertToBrandPojo(brandForm);
-        if (brandDtoHelper.validateInput(brandPojo)) {
+        if (validateInput(brandPojo)) {
             brandApi.create(BrandDtoHelper.normalise(brandPojo));
         }
+        return brandPojo.getId();
     }
 
     public void upload(MultipartFile brandTsv) throws Exception {
+        ValidationUtil.checkValid(brandTsv);
         File convertedTsv = FileConversionUtil.convert(brandTsv);
         String fileExtension = FilenameUtils.getExtension(convertedTsv.toString());
         if(!fileExtension.equals("tsv")){
@@ -69,5 +71,15 @@ public class BrandDto {
             brandForm.setBrand((String) line.get(category));
             create(brandForm);
         }
+    }
+
+    public boolean validateInput(BrandPojo brandPojo) throws ApiException {
+        BrandPojo brandPojoWithBrandCategoryCombo = brandApi
+                .selectWithBrandAndCategory(brandPojo.getBrand(), brandPojo.getCategory());
+        if (brandPojoWithBrandCategoryCombo != null) {
+            if (brandPojoWithBrandCategoryCombo.getId() != brandPojo.getId())
+                throw new ApiException("Provided Brand Category Pair already exists");
+        }
+        return true;
     }
 }

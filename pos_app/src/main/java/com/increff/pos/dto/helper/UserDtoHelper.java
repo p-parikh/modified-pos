@@ -5,7 +5,6 @@ import com.increff.pos.model.forms.UserForm;
 import com.increff.pos.pojo.UserPojo;
 import org.springframework.stereotype.Component;
 
-@Component
 public class UserDtoHelper {
 
     public static UserData convertToUserData(UserPojo userPojo){

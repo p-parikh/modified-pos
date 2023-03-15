@@ -12,10 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public class InventoryDtoHelper {
-    @Autowired
-    private InventoryApi inventoryApi;
 
     public static InventoryPojo convertToInventoryPojo(InventoryForm inventoryForm, Integer productId){
         InventoryPojo inventoryPojo = new InventoryPojo();
@@ -29,14 +26,6 @@ public class InventoryDtoHelper {
         inventoryData.setBarcode(productPojo.getBarcode());
         inventoryData.setQty(inventoryPojo.getQty());
         return inventoryData;
-    }
-
-    public boolean validateInput(InventoryPojo inventoryPojo) throws ApiException{
-        List<Integer> allProductId = inventoryApi.getAllId();
-        if(allProductId.contains(inventoryPojo.getProductId())){
-            throw new ApiException("Inventory for given product already exists");
-        }
-        return true;
     }
 
 }

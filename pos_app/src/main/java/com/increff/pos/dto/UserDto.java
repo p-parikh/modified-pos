@@ -28,7 +28,7 @@ public class UserDto {
     private String supervisorEmail;
 
     public void addUser(UserForm userForm) throws ApiException, IllegalAccessException{
-        ValidationUtil.validate(userForm);
+        ValidationUtil.checkValid(userForm);
         UserPojo userPojo = UserDtoHelper.convertToUserPojo(userForm);
         userPojo = UserDtoHelper.normalise(userPojo);
         if(userPojo.getEmail().equals(supervisorEmail)){
@@ -58,7 +58,7 @@ public class UserDto {
     }
 
     public void updateUser(Integer id, UserForm userForm) throws ApiException{
-        ValidationUtil.validate(userForm);
+        ValidationUtil.checkValid(userForm);
         UserPojo userPojo = UserDtoHelper.convertToUserPojo(userForm);
         userPojo = UserDtoHelper.normalise(userPojo);
         if(userPojo.getEmail().equals(supervisorEmail)){

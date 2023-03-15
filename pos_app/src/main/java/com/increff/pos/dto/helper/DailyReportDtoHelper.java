@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
 
-@Component
 public class DailyReportDtoHelper {
     private static final String DATE_FORMAT = "dd-MM-yyyy";
     public static DailyReportData convertDailyReportPojoToData(DailyReportPojo dailyReportPojo){

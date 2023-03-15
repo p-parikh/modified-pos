@@ -8,7 +8,6 @@ import com.increff.pos.model.forms.InventoryForm;
 import com.increff.pos.model.forms.OrderItemForm;
 import com.increff.pos.model.forms.ProductForm;
 import com.increff.pos.pojo.*;
-import org.apache.xpath.operations.Or;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,7 +16,6 @@ import org.springframework.test.context.web.AnnotationConfigWebContextLoader;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.transaction.Transactional;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 

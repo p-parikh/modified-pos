@@ -1,7 +1,14 @@
+com/increff/pos/dto/BrandDtoTest.class
 com/increff/pos/api/OrderItemApiTest.class
-com/increff/pos/config/QaConfig.class
-com/increff/pos/api/BrandApiTest.class
+com/increff/pos/dto/OrderItemDtoTest.class
+com/increff/pos/dto/PdfGeneratorDtoTest.class
+com/increff/pos/dto/ProductDtoTest.class
 com/increff/pos/api/DailyReportApiTest.class
 com/increff/pos/api/AbstractUnitTest.class
 com/increff/pos/api/InventoryApiTest.class
+com/increff/pos/dto/DailyReportDtoTest.class
 com/increff/pos/api/ProductApiTest.class
+com/increff/pos/config/QaConfig.class
+com/increff/pos/api/BrandApiTest.class
+com/increff/pos/dto/InventoryDtoTest.class
+com/increff/pos/dto/UserDtoTest.class

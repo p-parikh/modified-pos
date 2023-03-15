@@ -12,6 +12,7 @@ import com.increff.pos.pojo.InventoryPojo;
 import com.increff.pos.pojo.OrderItemPojo;
 import com.increff.pos.pojo.OrderPojo;
 import com.increff.pos.pojo.ProductPojo;
+import com.increff.pos.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +54,7 @@ public class OrderItemDto {
 
     @Transactional(rollbackFor = ApiException.class)
     public Integer update(Integer id, List<OrderItemForm> orderItemFormList) throws ApiException{
-
+        ValidationUtil.checkValid(orderItemFormList);
         List<OrderItemPojo> orderItemPojo_db = orderItemApi.selectByOrderId(id);
 
         for(OrderItemPojo temp : orderItemPojo_db){
@@ -69,6 +70,7 @@ public class OrderItemDto {
 
     @Transactional(rollbackFor = ApiException.class)
     public Integer create(List<OrderItemForm> orderItemFormList) throws ApiException {
+        ValidationUtil.checkValid(orderItemFormList);
         Timestamp datetime = new Timestamp(System.currentTimeMillis());
         OrderPojo orderPojo = new OrderPojo();
         orderPojo.setDatetime(datetime);

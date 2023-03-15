@@ -19,7 +19,7 @@ public class ProductPojo extends AbstractPojo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
+    @NotNull
     private String barcode;
 
     @NotNull

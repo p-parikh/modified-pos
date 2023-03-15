@@ -42,6 +42,7 @@ com/increff/pos/pojo/OrderItemPojo.class
 com/increff/pos/dto/ProductDto.class
 com/increff/pos/pojo/InventoryPojo.class
 com/increff/pos/model/data/ProductData.class
+com/increff/pos/util/PosSecurityFilter.class
 com/increff/pos/dao/ProductDao.class
 com/increff/pos/dao/UserDao.class
 com/increff/pos/pojo/AbstractPojo.class

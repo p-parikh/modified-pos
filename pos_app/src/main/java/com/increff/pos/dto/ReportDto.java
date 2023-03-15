@@ -5,13 +5,16 @@ import com.increff.pos.exception.ApiException;
 import com.increff.pos.model.data.BrandData;
 import com.increff.pos.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Component
 public class ReportDto {
@@ -31,7 +34,7 @@ public class ReportDto {
     @Autowired
     private OrderItemApi orderItemApi;
 
-    public List<String> getInventoryReportData() throws Exception {
+    public ResponseEntity<Object> getInventoryReportData() throws Exception {
         List<String> resultSet = new ArrayList<>();
 
         List<InventoryPojo> data = inventoryApi.getAllEntries();
@@ -47,11 +50,19 @@ public class ReportDto {
             row += temp.getQty();
             resultSet.add(row);
         }
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
 
-        return resultSet;
+        for(String temp : resultSet){
+            printWriter.println(temp);
+        }
+        printWriter.flush();
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/csv;charset=UTF-8")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"report.csv\"")
+                .body(stringWriter.toString());
     }
 
-    public List<String> getBrandReportData() throws Exception{
+    public ResponseEntity<Object> getBrandReportData() throws Exception{
         List<String> resultSet = new ArrayList<>();
 
         List<BrandPojo> data = brandApi.getAllEntries();
@@ -65,10 +76,25 @@ public class ReportDto {
             resultSet.add(row);
         }
 
-        return resultSet;
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+
+        for(String temp : resultSet){
+            printWriter.println(temp);
+        }
+        printWriter.flush();
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/csv;charset=UTF-8")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"report.csv\"")
+                .body(stringWriter.toString());
     }
 
-    public List<String> getSalesReportData(Timestamp startDate, Timestamp endDate) throws ApiException {
+    public ResponseEntity<Object> getSalesReportData(String startDateString, String endDateString) throws ApiException, ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date parsedStartDate = dateFormat.parse(startDateString);
+        Timestamp startDate = new java.sql.Timestamp(parsedStartDate.getTime());
+        Date parsedEndDate = dateFormat.parse(endDateString);
+        Timestamp endDate = new java.sql.Timestamp(parsedEndDate.getTime());
+
         List<String> resultSet = new ArrayList<>();
         List<OrderPojo> orderPojoList = orderApi.getOrderBetweenStartEndDate(startDate, endDate);
         HashMap<Integer, Long> hmQty = new HashMap<>();
@@ -95,6 +121,15 @@ public class ReportDto {
             row += hmRevenue.get(mapElement.getKey());
             resultSet.add(row);
         }
-        return resultSet;
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+
+        for(String temp : resultSet){
+            printWriter.println(temp);
+        }
+        printWriter.flush();
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/csv;charset=UTF-8")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"report.csv\"")
+                .body(stringWriter.toString());
     }
 }

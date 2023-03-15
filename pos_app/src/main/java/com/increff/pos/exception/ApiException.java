@@ -9,14 +9,14 @@ public class ApiException extends Exception {
 
     private Integer statusCode;
 
-    private List<FieldError> errorlist;
+    private List<String> errorlist;
 
     public ApiException(String message) {
         super(message);
         this.message = message;
     }
 
-    public ApiException(Integer statusCode, String message, List<FieldError> errorlist) {
+    public ApiException(Integer statusCode, String message, List<String> errorlist) {
         this.statusCode = statusCode;
         this.message = message;
         this.errorlist = errorlist;

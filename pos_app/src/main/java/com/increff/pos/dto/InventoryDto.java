@@ -11,6 +11,7 @@ import com.increff.pos.model.forms.InventoryForm;
 import com.increff.pos.pojo.InventoryPojo;
 import com.increff.pos.pojo.ProductPojo;
 import com.increff.pos.util.FileConversionUtil;
+import com.increff.pos.util.ValidationUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,8 +31,6 @@ public class InventoryDto {
     @Autowired
     private ProductApi productApi;
 
-    @Autowired
-    private InventoryDtoHelper inventoryDtoHelper;
 
     public List<InventoryData> getAllData() throws ApiException {
         List<InventoryData> resultSet = new ArrayList<>();
@@ -50,6 +49,7 @@ public class InventoryDto {
     }
 
     public void update(Integer id, InventoryForm inventoryForm) throws ApiException{
+        ValidationUtil.checkValid(inventoryForm);
         ProductPojo productPojo = productApi.selectWithBarcode(inventoryForm.getBarcode());
 
         if(productPojo == null){
@@ -61,7 +61,8 @@ public class InventoryDto {
         inventoryApi.update(id, inventoryPojo);
     }
 
-    public void create(InventoryForm inventoryForm) throws ApiException {
+    public Integer create(InventoryForm inventoryForm) throws ApiException {
+        ValidationUtil.checkValid(inventoryForm);
         ProductPojo productPojo = productApi.selectWithBarcode(inventoryForm.getBarcode());
 
         if(productPojo == null){
@@ -69,9 +70,11 @@ public class InventoryDto {
         }
 
         InventoryPojo inventoryPojo = InventoryDtoHelper.convertToInventoryPojo(inventoryForm, productPojo.getId());
-        if(inventoryDtoHelper.validateInput(inventoryPojo)){
+        if(validateInput(inventoryPojo)){
             inventoryApi.create(inventoryPojo);
         }
+
+        return inventoryPojo.getProductId();
     }
 
     public void upload(MultipartFile inventoryTsv) throws Exception{
@@ -91,5 +94,13 @@ public class InventoryDto {
             inventoryForm.setQty(Long.parseLong((String) line.get(qty)));
             create(inventoryForm);
         }
+    }
+
+    public boolean validateInput(InventoryPojo inventoryPojo) throws ApiException{
+        List<Integer> allProductId = inventoryApi.getAllId();
+        if(allProductId.contains(inventoryPojo.getProductId())){
+            throw new ApiException("Inventory for given product already exists");
+        }
+        return true;
     }
 }

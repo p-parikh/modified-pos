@@ -13,6 +13,7 @@
 /Users/priyamparikh/Documents/modified_pos/pos_app/src/main/java/com/increff/pos/model/data/ProductData.java
 /Users/priyamparikh/Documents/modified_pos/pos_app/src/main/java/com/increff/pos/dao/BrandDao.java
 /Users/priyamparikh/Documents/modified_pos/pos_app/src/main/java/com/increff/pos/dto/helper/BrandDtoHelper.java
+/Users/priyamparikh/Documents/modified_pos/pos_app/src/main/java/com/increff/pos/util/PosSecurityFilter.java
 /Users/priyamparikh/Documents/modified_pos/pos_app/src/main/java/com/increff/pos/pojo/DailyReportPojo.java
 /Users/priyamparikh/Documents/modified_pos/pos_app/src/main/java/com/increff/pos/api/BrandApi.java
 /Users/priyamparikh/Documents/modified_pos/pos_app/src/main/java/com/increff/pos/spring/SpringConfig.java

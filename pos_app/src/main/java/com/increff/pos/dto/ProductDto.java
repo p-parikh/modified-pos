@@ -12,6 +12,7 @@ import com.increff.pos.pojo.BrandPojo;
 import com.increff.pos.pojo.InventoryPojo;
 import com.increff.pos.pojo.ProductPojo;
 import com.increff.pos.util.FileConversionUtil;
+import com.increff.pos.util.ValidationUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,9 +33,6 @@ public class ProductDto {
     private BrandApi brandApi;
 
     @Autowired
-    private ProductDtoHelper productDtoHelper;
-
-    @Autowired
     private InventoryApi inventoryApi;
 
     public List<ProductData> getAllData() throws ApiException{
@@ -53,27 +51,30 @@ public class ProductDto {
     }
 
     public void update(Integer id, ProductForm productForm) throws ApiException{
+        ValidationUtil.checkValid(productForm);
         BrandPojo brandPojo = brandApi.selectWithBrandAndCategory(productForm.getBrand(),
                 productForm.getCategory());
         if(brandPojo == null){
             throw new ApiException("Product with provided brand and category does not exists");
         }
         ProductPojo productPojo = ProductDtoHelper.convertToProductPojo(productForm, brandPojo.getId());
-        if(productDtoHelper.validateInput(productPojo)){
+        if(validateInput(productPojo)){
             productApi.update(id, ProductDtoHelper.normalise(productPojo));
         }
     }
 
-    public void create(ProductForm productForm) throws ApiException{
+    public Integer create(ProductForm productForm) throws ApiException{
+        ValidationUtil.checkValid(productForm);
         BrandPojo brandPojo = brandApi.selectWithBrandAndCategory(productForm.getBrand(),
                 productForm.getCategory());
         if(brandPojo == null){
             throw new ApiException("Product with provided brand and category does not exists");
         }
         ProductPojo productPojo = ProductDtoHelper.convertToProductPojo(productForm, brandPojo.getId());
-        if(productDtoHelper.validateInput(productPojo)){
+        if(validateInput(productPojo)){
             productApi.create(ProductDtoHelper.normalise(productPojo));
         }
+        return productPojo.getId();
     }
 
     public void upload(MultipartFile productTsv) throws Exception {
@@ -100,6 +101,20 @@ public class ProductDto {
                     productForm.getMrp() + " Brand: " + productForm.getBrand() + " Category: " + productForm.getCategory() + " Name: " + productForm.getName());
             create(productForm);
         }
+    }
+
+    private boolean validateInput(ProductPojo productPojo) throws ApiException {
+        List<Integer> listOfBrandIds = brandApi.selectAllIDs();
+        if(!listOfBrandIds.contains(productPojo.getBrandCategory())){
+            throw new ApiException("Please enter valid Brand Category");
+        }
+        ProductPojo productWithBarcode = productApi.selectWithBarcode(productPojo.getBarcode());
+
+        if(productWithBarcode != null){
+            if(productPojo.getId() != productWithBarcode.getId())
+                throw new ApiException("Provided Product with given barcode already exists");
+        }
+        return true;
     }
 
 }

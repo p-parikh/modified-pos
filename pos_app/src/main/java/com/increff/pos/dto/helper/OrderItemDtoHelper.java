@@ -7,7 +7,6 @@ import com.increff.pos.pojo.OrderItemPojo;
 import com.increff.pos.pojo.ProductPojo;
 import org.springframework.stereotype.Component;
 
-@Component
 public class OrderItemDtoHelper {
     public static OrderItemPojo convertToOrderItemPojo(OrderItemForm orderItemForm, Integer productId, Integer orderId){
         OrderItemPojo orderItemPojo = new OrderItemPojo();

@@ -52,7 +52,7 @@ public class DailyReportDto {
     }
 
     public List<DailyReportData> getFilteredReport(DailyReportForm dailyReportForm) throws ApiException {
-        ValidationUtil.validate(dailyReportForm);
+        ValidationUtil.checkValid(dailyReportForm);
         DailyReportDtoHelper.normalise(dailyReportForm);
         ValidationUtil.validateDates(dailyReportForm.getStartDate(), dailyReportForm.getEndDate());
         List<DailyReportData> dailyReportDataList = new ArrayList<>();

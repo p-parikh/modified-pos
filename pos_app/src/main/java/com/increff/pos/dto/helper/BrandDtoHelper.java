@@ -9,11 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
-@Component
 public class BrandDtoHelper {
-
-    @Autowired
-    private BrandApi brandApi;
 
     public static BrandPojo convertToBrandPojo(BrandForm brandForm) {
         BrandPojo brandPojo = new BrandPojo();
@@ -35,19 +31,4 @@ public class BrandDtoHelper {
         brandPojo.setCategory(brandPojo.getCategory().trim().toLowerCase());
         return brandPojo;
     }
-
-    public boolean validateInput(BrandPojo brandPojo) throws ApiException {
-        if (brandPojo.getBrand() == null)
-            throw new ApiException("Please enter valid Brand");
-        if (brandPojo.getCategory() == null)
-            throw new ApiException("Please enter valid Category");
-        BrandPojo brandPojoWithBrandCategoryCombo = brandApi
-                .selectWithBrandAndCategory(brandPojo.getBrand(), brandPojo.getCategory());
-            if (brandPojoWithBrandCategoryCombo != null) {
-                if (brandPojoWithBrandCategoryCombo.getId() != brandPojo.getId())
-                    throw new ApiException("Provided Brand Category Pair already exists");
-            }
-        return true;
-    }
-
 }

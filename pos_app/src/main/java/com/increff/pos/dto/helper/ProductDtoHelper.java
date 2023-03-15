@@ -12,14 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
+
 public class ProductDtoHelper {
-
-    @Autowired
-    private ProductApi productApi;
-
-    @Autowired
-    private BrandApi brandApi;
 
     public static ProductPojo convertToProductPojo(ProductForm productForm, Integer brandCategoryId){
         ProductPojo productPojo = new ProductPojo();
@@ -47,21 +41,4 @@ public class ProductDtoHelper {
         return productPojo;
     }
 
-    public boolean validateInput(ProductPojo productPojo) throws ApiException {
-        if(productPojo.getBarcode() == null)
-            throw new ApiException("Please enter valid Barcode");
-        if(productPojo.getName() == null)
-            throw new ApiException("Please enter valid Name");
-        List<Integer> listOfBrandIds = brandApi.selectAllIDs();
-        if(!listOfBrandIds.contains(productPojo.getBrandCategory())){
-            throw new ApiException("Please enter valid Brand Category ID");
-        }
-        ProductPojo productWithBarcode = productApi.selectWithBarcode(productPojo.getBarcode());
-
-            if(productWithBarcode != null){
-                if(productPojo.getId() != productWithBarcode.getId())
-                    throw new ApiException("Provided Product with given barcode already exists ");
-            }
-        return true;
-    }
 }
