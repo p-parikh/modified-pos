@@ -69,10 +69,9 @@ public class DailyReportDtoTest extends AbstractUnitTest {
         String currentDayDate = currentDateTime.format(dateTimeFormatter);
         String startDate = currentDayDate + START_TIME;
         String endDate = currentDayDate + END_TIME;
-        Timestamp startDateTime = Timestamp.valueOf(startDate);
-        Timestamp endDateTime = Timestamp.valueOf(endDate);
-
-        dailyReportDto.generateDailyReport(startDateTime, endDateTime);
+        ZonedDateTime zonedStartDateTime = ZonedDateTime.parse(startDate);
+        ZonedDateTime zonedEndDateTime = ZonedDateTime.parse(endDate);
+        dailyReportDto.generateDailyReport(zonedStartDateTime, zonedEndDateTime);
     }
 
 }

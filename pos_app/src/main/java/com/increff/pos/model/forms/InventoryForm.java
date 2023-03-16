@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -12,7 +13,8 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class InventoryForm {
     @NotNull
-    private Long qty;
+    @Min(value = 0)
+    private Integer qty;
     @NotBlank
     private String barcode;
 }

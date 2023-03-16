@@ -20,7 +20,6 @@ com/increff/pos/util/SecurityUtil.class
 com/increff/pos/spring/SpringConfig.class
 com/increff/pos/dao/OrderItemDao.class
 com/increff/pos/model/data/InvoiceData.class
-com/increff/pos/controller/ApiExceptionHandlerController.class
 com/increff/pos/model/data/MessageData.class
 com/increff/pos/dao/InventoryDao.class
 com/increff/pos/pojo/DailyReportPojo.class

@@ -58,6 +58,7 @@ public class ProductDto {
             throw new ApiException("Product with provided brand and category does not exists");
         }
         ProductPojo productPojo = ProductDtoHelper.convertToProductPojo(productForm, brandPojo.getId());
+        productPojo.setId(id);
         if(validateInput(productPojo)){
             productApi.update(id, ProductDtoHelper.normalise(productPojo));
         }
@@ -116,5 +117,4 @@ public class ProductDto {
         }
         return true;
     }
-
 }

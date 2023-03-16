@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -13,5 +15,5 @@ public class OrderData {
 
     private Integer orderId;
 
-    private Timestamp datetime;
+    private ZonedDateTime datetime;
 }

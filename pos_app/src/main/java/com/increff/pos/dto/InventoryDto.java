@@ -91,7 +91,7 @@ public class InventoryDto {
         for(HashMap<String, Object> line : values){
             InventoryForm inventoryForm = new InventoryForm();
             inventoryForm.setBarcode((String) line.get(barcode));
-            inventoryForm.setQty(Long.parseLong((String) line.get(qty)));
+            inventoryForm.setQty(Integer.parseInt((String) line.get(qty)));
             create(inventoryForm);
         }
     }

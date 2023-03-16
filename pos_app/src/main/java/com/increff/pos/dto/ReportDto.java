@@ -14,11 +14,17 @@ import java.io.StringWriter;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import static com.increff.pos.api.DailyReportApi.END_TIME;
+import static com.increff.pos.api.DailyReportApi.START_TIME;
 
 @Component
 public class ReportDto {
 
+    public static final String DATE_FORMAT_YMD = "yyyy-MM-dd";
     @Autowired
     private InventoryApi inventoryApi;
 
@@ -89,14 +95,16 @@ public class ReportDto {
     }
 
     public ResponseEntity<Object> getSalesReportData(String startDateString, String endDateString) throws ApiException, ParseException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date parsedStartDate = dateFormat.parse(startDateString);
-        Timestamp startDate = new java.sql.Timestamp(parsedStartDate.getTime());
-        Date parsedEndDate = dateFormat.parse(endDateString);
-        Timestamp endDate = new java.sql.Timestamp(parsedEndDate.getTime());
+        ZonedDateTime currentDateTime = ZonedDateTime.now().minusDays(1);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT_YMD);
+        String lastDayDate = currentDateTime.format(dateTimeFormatter);
+        String startDate = lastDayDate + START_TIME;
+        String endDate = lastDayDate + END_TIME;
+        ZonedDateTime zonedStartDateTime = ZonedDateTime.parse(startDate);
+        ZonedDateTime zonedEndDateTime = ZonedDateTime.parse(endDate);
 
         List<String> resultSet = new ArrayList<>();
-        List<OrderPojo> orderPojoList = orderApi.getOrderBetweenStartEndDate(startDate, endDate);
+        List<OrderPojo> orderPojoList = orderApi.getOrderBetweenStartEndDate(zonedStartDateTime, zonedEndDateTime);
         HashMap<Integer, Long> hmQty = new HashMap<>();
         HashMap<Integer, Double> hmRevenue = new HashMap<>();
         for(OrderPojo i : orderPojoList){

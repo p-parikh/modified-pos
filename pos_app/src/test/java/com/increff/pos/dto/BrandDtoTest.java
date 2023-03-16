@@ -1,14 +1,16 @@
 package com.increff.pos.dto;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.increff.pos.api.AbstractUnitTest;
 import com.increff.pos.exception.ApiException;
 import com.increff.pos.model.data.BrandData;
 import com.increff.pos.model.forms.BrandForm;
+import io.swagger.annotations.Api;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -20,7 +22,7 @@ public class BrandDtoTest extends AbstractUnitTest {
     public ExpectedException exceptionRule = ExpectedException.none();
 
     @Test
-    public void testAddBrand() throws ApiException, IllegalAccessException {
+    public void testAddBrand() throws ApiException {
         BrandForm brandForm = new BrandForm();
         brandForm.setBrand("Test Brand");
         brandForm.setCategory("teSt catEgOrY");
@@ -30,39 +32,54 @@ public class BrandDtoTest extends AbstractUnitTest {
         assertEquals("test category", brandData.getCategory());
     }
 
-    @Test
-    public void testBrandCategoryUniquenessOnAdd() throws ApiException, IllegalAccessException {
+    @Test(expected = ApiException.class)
+    public void testBrandCategoryUniquenessOnAdd() throws ApiException {
         BrandForm brandForm = new BrandForm();
         String brand = "brand";
         String category = "category";
         brandForm.setBrand(brand);
         brandForm.setCategory(category);
         brandDto.create(brandForm);
-
-        exceptionRule.expect(ApiException.class);
-        exceptionRule.expectMessage("Brand: " + brand + " and category: " + category + " pair already exist!");
-        brandDto.create(brandForm);
+        try{
+            brandDto.create(brandForm);
+        }
+        catch(ApiException e){
+            Assert.assertEquals("Provided Brand Category Pair already exists", e.getMessage());
+            throw new ApiException("Provided Brand Category Pair already exists");
+        }
     }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testEmptyBrandOnAdd() throws ApiException, IllegalAccessException {
+    @Test(expected = ApiException.class)
+    public void testEmptyBrandOnAdd() throws ApiException {
         BrandForm brandForm = new BrandForm();
         brandForm.setBrand("");
         brandForm.setCategory("category");
-        brandDto.create(brandForm);
+        try{
+            brandDto.create(brandForm);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
     }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testEmptyCategoryOnAdd() throws ApiException, IllegalAccessException {
+    @Test(expected = ApiException.class)
+    public void testEmptyCategoryOnAdd() throws ApiException {
         BrandForm brandForm = new BrandForm();
         brandForm.setBrand("brand");
         brandForm.setCategory("");
-        brandDto.create(brandForm);
+        try{
+            brandDto.create(brandForm);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
     }
 
 
     @Test
-    public void testGetAll() throws ApiException, IllegalAccessException {
+    public void testGetAll() throws ApiException {
         BrandForm brandForm = new BrandForm();
         for (Integer i = 0; i < 10; i++) {
             brandForm.setBrand("Brand_" + i);
@@ -79,7 +96,7 @@ public class BrandDtoTest extends AbstractUnitTest {
 
 
     @Test
-    public void testUpdate() throws ApiException, IllegalAccessException {
+    public void testUpdate() throws ApiException {
         BrandForm brandForm = new BrandForm();
         brandForm.setBrand("Brand");
         brandForm.setCategory("Category");

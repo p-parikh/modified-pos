@@ -26,7 +26,8 @@ public class DailyReportDao extends AbstractDao{
         TypedQuery<DailyReportPojo> query = em().createQuery(SELECT_FILTERED, DailyReportPojo.class);
         query.setParameter("startDateTime", startDateTime);
         query.setParameter("endDateTime", endDateTime);
-        return query.getResultList();
+        List<DailyReportPojo> dailyReportPojoList = query.getResultList();
+        return dailyReportPojoList;
     }
 
 }

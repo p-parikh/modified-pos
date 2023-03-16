@@ -2,6 +2,8 @@ package com.increff.pos.spring;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -11,6 +13,8 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @EnableWebMvc
 @Configuration
 @EnableTransactionManagement
+@EnableAsync
+@EnableScheduling
 @ComponentScan("com.increff.pos")
 @PropertySources({
         @PropertySource(value = "file:pos.properties", ignoreResourceNotFound = true)

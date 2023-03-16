@@ -11,6 +11,8 @@ public class InvoiceDto {
     private InvoiceApi invoiceApi;
 
     public String generateInvoicePdf(InvoiceData invoiceData){
-        return invoiceApi.generateInvoicePdf(invoiceData);
+        String result =  invoiceApi.generateInvoicePdf(invoiceData);
+        System.out.println("in dto class, and result : " +result);
+        return result;
     }
 }

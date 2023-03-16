@@ -16,6 +16,8 @@ public class InvoiceApi {
 
     public String generateInvoicePdf(InvoiceData invoiceData){
         javaToXml.javaToXmlConverter(invoiceData);
-        return pdfGenerator.xmlToPdfConverter();
+        String result = pdfGenerator.xmlToPdfConverter();
+        System.out.println("in api class, and result : " +result);
+        return result;
     }
 }

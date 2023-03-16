@@ -1,5 +1,6 @@
 package com.increff.pos.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.increff.pos.dto.*;
 import com.increff.pos.exception.ApiException;
 import com.increff.pos.model.data.BrandData;
@@ -79,7 +80,7 @@ public class OperatorController {
 
     @ApiOperation(value = "generate invoice")
     @RequestMapping(path = "/order/generate-invoice/{orderId}", method = RequestMethod.GET)
-    public void generateInvoice(@PathVariable Integer orderId) throws ApiException{
+    public void generateInvoice(@PathVariable Integer orderId) throws ApiException, JsonProcessingException {
         pdfGeneratorDto.generatePdf(orderId);
     }
 

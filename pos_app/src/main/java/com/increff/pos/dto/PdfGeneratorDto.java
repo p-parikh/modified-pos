@@ -1,5 +1,6 @@
 package com.increff.pos.dto;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.increff.pos.api.OrderApi;
 import com.increff.pos.api.OrderItemApi;
 import com.increff.pos.api.ProductApi;
@@ -12,8 +13,11 @@ import com.increff.pos.pojo.ProductPojo;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,10 +37,11 @@ public class PdfGeneratorDto {
     public static final String DATE_FORMAT_DMY = "dd-MM-yyyy";
     public static final String TIME_FORMAT = "HH:mm:ss";
 
-    @Value("${pdfApp.url}")
-    private String pdfAppUrl;
-    @Value("${pdfFilePath}")
-    private String pdfFilePath;
+//    @Value("${pdfApp.url}")
+    private String pdfAppUrl = "http://localhost:9001/pdf/api/invoice/generate-invoice";
+
+//    @Value("${pdfFilePath}")
+    private String pdfFilePath = "src/main/resources/PdfFiles";
     @Autowired
     private OrderApi orderApi;
     @Autowired
@@ -47,7 +52,7 @@ public class PdfGeneratorDto {
     @Autowired
     private OrderItemApi orderItemApi;
 
-    public void generatePdf(Integer id) throws ApiException{
+    public void  generatePdf(Integer id) throws ApiException, JsonProcessingException {
         ZonedDateTime currentZonedDateTime = ZonedDateTime.now();
         OrderPojo orderPojo = orderApi.getById(id);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT_DMY);
@@ -55,12 +60,21 @@ public class PdfGeneratorDto {
         dateTimeFormatter = DateTimeFormatter.ofPattern(TIME_FORMAT);
         String currentTime = currentZonedDateTime.format(dateTimeFormatter);
         InvoiceData invoiceData = getInvoiceDetails(orderPojo, currentDate, currentTime);
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = ow.writeValueAsString(invoiceData);
+        System.out.println(json);
         String base64;
+        ResponseEntity<String> response;
         try{
-            base64 = restTemplate.postForEntity(pdfAppUrl, invoiceData, String.class).getBody();
+            response = restTemplate.postForEntity(pdfAppUrl, invoiceData, String.class);
+            System.out.println(response.getBody());
         } catch (Exception e){
+            e.printStackTrace();
             throw new ApiException("Unable to create invoice as invoice-app is not running.");
         }
+
+        base64 = response.getBody();
         File pdfDir = new File(pdfFilePath);
         if(!pdfDir.mkdirs()){
             logger.info("PdfFiles folder created successfully");

@@ -28,7 +28,7 @@ import static com.increff.pos.api.DailyReportApi.START_TIME;
 
 @Component
 public class DailyReportDto {
-    private static final String SCHEDULER_TIME = "* * * * * *";
+    private static final String SCHEDULER_TIME = "0 */1 * ? * *";
     private static final Logger logger = Logger.getLogger(DailyReportDto.class);
     public static final String DATE_FORMAT_YMD = "yyyy-MM-dd";
 
@@ -67,29 +67,23 @@ public class DailyReportDto {
     @Scheduled(cron = SCHEDULER_TIME)
     public void dailyReportScheduled() {
         //currentDateTime gets the last day date for which daily report has to be generated
-        ZonedDateTime currentDateTime = ZonedDateTime.now().minusDays(1);
+        System.out.println("scheduled call triggered");
+        ZonedDateTime currentDateTime = ZonedDateTime.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT_YMD);
         String lastDayDate = currentDateTime.format(dateTimeFormatter);
         String startDate = lastDayDate + START_TIME;
         String endDate = lastDayDate + END_TIME;
-        Timestamp startDateTime = Timestamp.valueOf(startDate);
-        Timestamp endDateTime = Timestamp.valueOf(endDate);
-        generateDailyReport(startDateTime, endDateTime);
+        ZonedDateTime zonedStartDateTime = ZonedDateTime.parse(startDate);
+        ZonedDateTime zonedEndDateTime = ZonedDateTime.parse(endDate);
+        generateDailyReport(zonedStartDateTime, zonedEndDateTime);
 
     }
 
-    public void generateDailyReport(Timestamp startDateTime, Timestamp endDateTime) {
+    public void generateDailyReport(ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
         //orderPojoList stores all the orders which were placed and invoice was created between startDateTime and endDateTime
         List<OrderPojo> orderPojoList = orderApi.getOrderBetweenStartEndDate(startDateTime, endDateTime);
         DailyReportPojo dailyReportPojo = new DailyReportPojo();
-        ZoneId zoneId = ZoneId.systemDefault();
-        System.out.println("\nDefault System Zone is :- \n"
-                + zoneId);
-
-
-        // 3. Convert java.sql.Timestamp to ZonedDateTime
-        ZonedDateTime zonedStartDateTime = startDateTime.toLocalDateTime().atZone(zoneId);
-        dailyReportPojo.setReportDate(zonedStartDateTime);
+        dailyReportPojo.setReportDate(startDateTime);
         Integer totalOrder = 0;
         Integer totalItem = 0;
         double totalRevenue = 0.0;

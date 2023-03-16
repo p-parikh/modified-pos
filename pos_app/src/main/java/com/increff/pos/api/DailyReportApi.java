@@ -42,7 +42,6 @@ public class DailyReportApi {
         } catch (Exception e) {
             throw new ApiException("Invalid date format");
         }
-
         return dailyReportDao.selectFilteredReport(zonedStartDateTime, zonedEndDateTime);
     }
 }

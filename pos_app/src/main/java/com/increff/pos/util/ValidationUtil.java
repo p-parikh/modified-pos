@@ -12,9 +12,6 @@ public class ValidationUtil {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<T>> violations = validator.validate(form);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
         return violations;
     }
     public static void validateDates(String startDate, String endDate) throws ApiException {

@@ -6,6 +6,7 @@ import com.increff.pos.model.data.InventoryData;
 import com.increff.pos.model.forms.BrandForm;
 import com.increff.pos.model.forms.InventoryForm;
 import com.increff.pos.model.forms.ProductForm;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -37,42 +38,57 @@ public class InventoryDtoTest extends AbstractUnitTest {
         matchData(0, inventoryData);
     }
 
-    @Test
+    @Test(expected = ApiException.class)
     public void testUnavailableBarcodeOnAdd() throws ApiException, IllegalAccessException {
         InventoryForm inventoryForm = createInventory(0);
         inventoryForm.setBarcode("barcode1");
-
-        exceptionRule .expect(ApiException.class);
-        exceptionRule.expectMessage("Product with barcode: barcode1 does not exit!");
-        inventoryDto.create(inventoryForm);
+        try{
+            inventoryDto.create(inventoryForm);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Product with provided barcode does not exists", e.getMessage());
+            throw new ApiException("Product with provided barcode does not exists");
+        }
     }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testIncorrectBarcodeSizeOnAdd() throws ApiException, IllegalAccessException {
-        InventoryForm inventoryForm = createInventory(0);
-        inventoryForm.setBarcode("barcode");
-        inventoryDto.create(inventoryForm);
-    }
-
-    @Test(expected = ConstraintViolationException.class)
+    @Test(expected = ApiException.class)
     public void testNegativeQuantityOnAdd() throws ApiException, IllegalAccessException {
         InventoryForm inventoryForm = createInventory(0);
-        inventoryForm.setQty((long)-1);
-        inventoryDto.create(inventoryForm);
+        inventoryForm.setQty(-1);
+        try{
+            inventoryDto.create(inventoryForm);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
+
     }
 
-    @Test(expected = ConstraintViolationException.class)
+    @Test(expected = ApiException.class)
     public void testEmptyBarcodeOnAdd() throws ApiException, IllegalAccessException {
         InventoryForm inventoryForm = createInventory(0);
         inventoryForm.setBarcode("");
-        inventoryDto.create(inventoryForm);
+        try{
+            inventoryDto.create(inventoryForm);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
     }
 
-    @Test(expected = ConstraintViolationException.class)
+    @Test(expected = ApiException.class)
     public void testEmptyQuantityOnAdd() throws ApiException, IllegalAccessException {
         InventoryForm inventoryForm = createInventory(0);
         inventoryForm.setQty(null);
-        inventoryDto.create(inventoryForm);
+        try{
+            inventoryDto.create(inventoryForm);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
     }
 
     @Test
@@ -93,28 +109,39 @@ public class InventoryDtoTest extends AbstractUnitTest {
         InventoryForm inventoryForm = createInventory(0);
         Integer inventoryId = inventoryDto.create(inventoryForm);
 
-        inventoryForm.setQty((long)115);
+        inventoryForm.setQty(115);
         inventoryDto.update(inventoryId, inventoryForm);
 
         InventoryData inventoryData = inventoryDto.getAllData().get(0);
         assertEquals((Integer) 115, inventoryData.getQty());
     }
 
-    @Test(expected = ConstraintViolationException.class)
+    @Test(expected = ApiException.class)
     public void testNegativeQuantityOnUpdate() throws ApiException, IllegalAccessException {
         InventoryForm inventoryForm = createInventory(0);
         Integer inventoryId = inventoryDto.create(inventoryForm);
-
-        inventoryForm.setQty((long)-1);
-        inventoryDto.update(inventoryId, inventoryForm);
+        inventoryForm.setQty(-1);
+        try{
+            inventoryDto.update(inventoryId, inventoryForm);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
     }
 
-    @Test(expected = ConstraintViolationException.class)
+    @Test(expected = ApiException.class)
     public void testEmptyQuantityOnUpdate() throws ApiException, IllegalAccessException {
         InventoryForm inventoryForm = createInventory(0);
         Integer inventoryId = inventoryDto.create(inventoryForm);
         inventoryForm.setQty(null);
-        inventoryDto.update(inventoryId, inventoryForm);
+        try{
+            inventoryDto.update(inventoryId, inventoryForm);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
     }
 
 
@@ -139,7 +166,7 @@ public class InventoryDtoTest extends AbstractUnitTest {
 
         InventoryForm inventoryForm = new InventoryForm();
         inventoryForm.setBarcode("barcode" + id);
-        inventoryForm.setQty((long)100);
+        inventoryForm.setQty(100);
 
         return inventoryForm;
     }

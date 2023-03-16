@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,8 +72,10 @@ public class OrderItemDto {
 
     @Transactional(rollbackFor = ApiException.class)
     public Integer create(List<OrderItemForm> orderItemFormList) throws ApiException {
-        ValidationUtil.checkValid(orderItemFormList);
-        Timestamp datetime = new Timestamp(System.currentTimeMillis());
+        for(OrderItemForm orderItemForm : orderItemFormList){
+            ValidationUtil.checkValid(orderItemForm);
+        }
+        ZonedDateTime datetime = ZonedDateTime.now(ZoneId.systemDefault());
         OrderPojo orderPojo = new OrderPojo();
         orderPojo.setDatetime(datetime);
         orderApi.create(orderPojo);

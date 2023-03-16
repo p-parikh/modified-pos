@@ -31,7 +31,7 @@ public class OrderApi {
         return orderPojo;
     }
 
-    public OrderPojo getByDatetime(Timestamp datetime) throws ApiException {
+    public OrderPojo getByDatetime(ZonedDateTime datetime) throws ApiException {
 
         OrderPojo orderPojo = orderDao.viewByDatetime(datetime);
         if(orderPojo == null){
@@ -49,8 +49,15 @@ public class OrderApi {
         orderDao.update(id,orderPojo);
     }
 
-    public List<OrderPojo> getOrderBetweenStartEndDate(Timestamp startDate, Timestamp endDate){
-        return orderDao.getOrderBetweenStartAndEndDate(startDate,endDate);
+    public List<OrderPojo> getOrderBetweenStartEndDate(ZonedDateTime startDate, ZonedDateTime endDate){
+        System.out.println("inside get order between start end date");
+        List<OrderPojo>  orderPojoList= orderDao.getOrderBetweenStartAndEndDate(startDate,endDate);
+        int count = 0;
+        for(OrderPojo orderPojo : orderPojoList){
+            count++;
+        }
+        System.out.println("orderApi count: " +count);
+        return orderPojoList;
     }
 
     public void delete(Integer id){

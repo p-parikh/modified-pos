@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Timestamp;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -27,7 +29,7 @@ public class OrderItemApiTest extends AbstractUnitTest{
     @Test
     public void testCreateOrder() throws ApiException {
         List<OrderItemPojo> orderItemPojoList = createOrderItemPojoList(0);
-        Timestamp datetime = new Timestamp(System.currentTimeMillis());
+        ZonedDateTime datetime = ZonedDateTime.now(ZoneId.systemDefault());
         OrderPojo orderPojo = new OrderPojo();
         orderPojo.setDatetime(datetime);
         orderApi.create(orderPojo);
@@ -43,7 +45,7 @@ public class OrderItemApiTest extends AbstractUnitTest{
     @Test
     public void testUpdateOrder() throws ApiException {
         List<OrderItemPojo> orderItemPojoList = createOrderItemPojoList(0);
-        Timestamp datetime = new Timestamp(System.currentTimeMillis());
+        ZonedDateTime datetime = ZonedDateTime.now(ZoneId.systemDefault());
         OrderPojo orderPojo = new OrderPojo();
         orderPojo.setDatetime(datetime);
         orderApi.create(orderPojo);
@@ -72,7 +74,7 @@ public class OrderItemApiTest extends AbstractUnitTest{
     @Test
     public void testGetAllOrders() throws ApiException {
         List<OrderItemPojo> orderItemPojoList = createOrderItemPojoList(0);
-        Timestamp datetime = new Timestamp(System.currentTimeMillis());
+        ZonedDateTime datetime = ZonedDateTime.now(ZoneId.systemDefault());
         OrderPojo orderPojo = new OrderPojo();
         orderPojo.setDatetime(datetime);
         orderApi.create(orderPojo);
@@ -92,7 +94,7 @@ public class OrderItemApiTest extends AbstractUnitTest{
 
     @Test(expected = ApiException.class)
     public void testDeleteOrderItemWithIncorrectId() throws ApiException {
-        orderItemApi.delete(-1);
+        orderItemApi.delete(1);
     }
 
 

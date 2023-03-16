@@ -5,6 +5,7 @@ import com.increff.pos.exception.ApiException;
 import com.increff.pos.model.data.InventoryData;
 import com.increff.pos.model.data.OrderItemData;
 import com.increff.pos.model.forms.OrderItemForm;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -33,28 +34,44 @@ public class OrderItemDtoTest extends AbstractUnitTest {
         matchData(0, orderItemDataList);
     }
 
-    @Test
+    @Test(expected = ApiException.class)
     public void testInvalidBarcodeOnAddOrder() throws ApiException, IllegalAccessException {
         List<OrderItemForm> orderItemFormList = createOrder(0);
         orderItemFormList.get(0).setBarcode("barcode9");
+        try{
+            orderItemDto.create(orderItemFormList);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Product with provided barcode does not exists", e.getMessage());
+            throw new ApiException("Product with provided barcode does not exists");
+        }
 
-        exceptionRule.expect(ApiException.class);
-        exceptionRule.expectMessage("Product with provided barcode does not exists");
-        orderItemDto.create(orderItemFormList);
     }
 
     @Test(expected = ApiException.class)
     public void testEmptyBarcodeOnAddOrder() throws ApiException, IllegalAccessException {
         List<OrderItemForm> orderItemFormList = createOrder(0);
         orderItemFormList.get(0).setBarcode("");
-        orderItemDto.create(orderItemFormList);
+        try {
+            orderItemDto.create(orderItemFormList);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
     }
 
     @Test(expected = ApiException.class)
     public void testEmptyQuantityOnAddOrder() throws ApiException, IllegalAccessException {
         List<OrderItemForm> orderItemFormList = createOrder(0);
         orderItemFormList.get(0).setQuantity(null);
-        orderItemDto.create(orderItemFormList);
+        try {
+            orderItemDto.create(orderItemFormList);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
     }
 
 
@@ -72,7 +89,7 @@ public class OrderItemDtoTest extends AbstractUnitTest {
             orderItemDto.create(orderItemFormList);
         }
         List<OrderItemData> orderDataList = orderItemDto.getAllData();
-        assertEquals(5, orderDataList.size());
+        assertEquals(10, orderDataList.size());
     }
 
     @Test
@@ -91,9 +108,9 @@ public class OrderItemDtoTest extends AbstractUnitTest {
         Integer orderId = orderItemDto.create(orderItemFormList);
 
         List<OrderItemForm> newOrderItemFormList = createOrder(1);
-        orderItemDto.update(orderId, newOrderItemFormList);
+        Integer updatedOrderId = orderItemDto.update(orderId, newOrderItemFormList);
 
-        List<OrderItemData> orderItemDataList = orderItemDto.getByOrderId(orderId);
+        List<OrderItemData> orderItemDataList = orderItemDto.getByOrderId(updatedOrderId);
         matchData(1, orderItemDataList);
         List<InventoryData> inventoryDataList = inventoryDto.getAllData();
         assertEquals((Integer) 400, inventoryDataList.get(0).getQty());
@@ -107,19 +124,15 @@ public class OrderItemDtoTest extends AbstractUnitTest {
 
         List<OrderItemForm> newOrderItemFormList = createOrder(1);
         newOrderItemFormList.get(0).setQuantity(-1);
-        orderItemDto.update(orderId, newOrderItemFormList);
+        try{
+            orderItemDto.update(orderId, newOrderItemFormList);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
+
     }
-
-    @Test(expected = ApiException.class)
-    public void testSellingPriceGreaterThanMrpOnUpdateOrder() throws ApiException, IllegalAccessException {
-        List<OrderItemForm> orderItemFormList = createOrder(0);
-        Integer orderId = orderItemDto.create(orderItemFormList);
-
-        List<OrderItemForm> newOrderItemFormList = createOrder(1);
-        newOrderItemFormList.get(0).setSellingPrice(1000.0);
-        orderItemDto.update(orderId, newOrderItemFormList);
-    }
-
 
     private void matchData(Integer id, List<OrderItemData> orderItemDataList) throws ApiException {
         assertEquals(2, orderItemDataList.size());

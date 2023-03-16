@@ -83,6 +83,7 @@ public class JavaToXml {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
+            System.out.println("ZXCVV : " + xmlFilePath);
             StreamResult result = new StreamResult(new File(xmlFilePath));
             transformer.transform(source, result);
         }

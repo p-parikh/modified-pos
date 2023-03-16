@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.TypedQuery;
 import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Repository
@@ -20,8 +21,7 @@ public class OrderDao extends AbstractDao{
 
     private static final String SELECT_ALL = "select o from Orderpojo o";
 
-    private static final String SELECT_BY_START_AND_END_DATE = "select o from Orderpojo o where datetime between :startDate and :endDate";
-
+    private static final String SELECT_BY_START_AND_END_DATE = "select p from Orderpojo p where updatedAt >=: startDateTime and updatedAt <=: endDateTime";
     public List<OrderPojo> viewAll(){
         TypedQuery<OrderPojo> query = em().createQuery(SELECT_ALL, OrderPojo.class);
         return query.getResultList();
@@ -33,7 +33,7 @@ public class OrderDao extends AbstractDao{
         return getSingleRow(query);
     }
 
-    public OrderPojo viewByDatetime(Timestamp datetime){
+    public OrderPojo viewByDatetime(ZonedDateTime datetime){
         TypedQuery<OrderPojo> query = em().createQuery(SELECT_BY_DATETIME, OrderPojo.class);
         query.setParameter("datetime", datetime);
         return getSingleRow(query);
@@ -53,10 +53,12 @@ public class OrderDao extends AbstractDao{
         orderPojo_db.setDatetime(orderPojo.getDatetime());
     }
 
-    public List<OrderPojo> getOrderBetweenStartAndEndDate(Timestamp startDate, Timestamp endDate){
+    public List<OrderPojo> getOrderBetweenStartAndEndDate(ZonedDateTime startDate, ZonedDateTime endDate){
         TypedQuery<OrderPojo> query = em().createQuery(SELECT_BY_START_AND_END_DATE, OrderPojo.class);
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
+        System.out.println("Start Date: "+startDate);
+        System.out.println("End Date:" +endDate);
+        query.setParameter("startDateTime", startDate);
+        query.setParameter("endDateTime", endDate);
         return query.getResultList();
     }
 

@@ -46,7 +46,7 @@ public class OrderItemApi {
         return orderItemDao.selectWithOrderId(orderId);
     }
 
-    public void delete(Integer id){
+    public void delete(Integer id) throws ApiException{
         orderItemDao.delete(id);
     }
 }

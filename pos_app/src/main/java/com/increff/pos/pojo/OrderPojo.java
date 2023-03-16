@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -18,5 +18,5 @@ public class OrderPojo extends AbstractPojo {
     private Integer id;
 
     @NotNull
-    private Timestamp datetime;
+    private ZonedDateTime datetime;
 }

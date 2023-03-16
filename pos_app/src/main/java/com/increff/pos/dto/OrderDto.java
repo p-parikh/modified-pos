@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class OrderDto {
         return OrderDtoHelper.convertToOrderData(orderApi.getById(id));
     }
 
-    public OrderData getByDatetime(Timestamp datetime) throws ApiException{
+    public OrderData getByDatetime(ZonedDateTime datetime) throws ApiException{
         return OrderDtoHelper.convertToOrderData(orderApi.getByDatetime(datetime));
     }
 

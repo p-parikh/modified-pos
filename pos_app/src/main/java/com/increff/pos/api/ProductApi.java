@@ -40,7 +40,6 @@ public class ProductApi {
     }
 
     public ProductPojo selectWithBarcode(String barcode){
-
         return productDao.selectWithBarCode(barcode);
     }
 }

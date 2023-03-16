@@ -60,8 +60,11 @@ public class OrderItemDao extends AbstractDao{
         return query.getResultList();
     }
 
-    public void delete(Integer id){
+    public void delete(Integer id) throws ApiException{
         OrderItemPojo orderItemPojo = viewById(id);
+        if(orderItemPojo == null){
+            throw new ApiException("Order Item does not exists with provided id");
+        }
         em().remove(orderItemPojo);
     }
 }

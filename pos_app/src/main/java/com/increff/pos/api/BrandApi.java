@@ -39,7 +39,7 @@ public class BrandApi {
         brandRepo.update(id, new_bp);
     }
 
-    public BrandPojo selectWithBrandAndCategory(String brand, String category) {
+    public BrandPojo selectWithBrandAndCategory(String brand, String category){
         return brandRepo.selectWithBrandAndCategory(brand, category);
     }
 

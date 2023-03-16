@@ -5,6 +5,7 @@ import com.increff.pos.exception.ApiException;
 import com.increff.pos.model.data.ProductData;
 import com.increff.pos.model.forms.BrandForm;
 import com.increff.pos.model.forms.ProductForm;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -26,7 +27,7 @@ public class ProductDtoTest extends AbstractUnitTest {
 
 
     @Test
-    public void testAdd() throws ApiException, IllegalAccessException {
+    public void testAdd() throws ApiException {
         ProductForm productForm = createProduct(0);
         productDto.create(productForm);
 
@@ -34,66 +35,103 @@ public class ProductDtoTest extends AbstractUnitTest {
         matchData(0, productData);
     }
 
-    @Test
-    public void testUniqueBarcodeOnAdd() throws ApiException, IllegalAccessException {
+    @Test(expected = ApiException.class)
+    public void testUniqueBarcodeOnAdd() throws ApiException {
         ProductForm productForm = createProduct(0);
         productDto.create(productForm);
-
-        exceptionRule.expect(ApiException.class);
-        exceptionRule.expectMessage("Provided Product with given barcode already exists");
-        productDto.create(productForm);
+        try{
+            productDto.create(productForm);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Provided Product with given barcode already exists", e.getMessage());
+            throw new ApiException("Provided Product with given barcode already exists");
+        }
     }
 
-    @Test
-    public void testUnavailableBrandCategoryPairOnAdd() throws ApiException, IllegalAccessException {
+    @Test(expected = ApiException.class)
+    public void testUnavailableBrandCategoryPairOnAdd() throws ApiException {
         ProductForm productForm = createProduct(0);
         productDto.create(productForm);
 
         productForm.setBrand("brand");
         productForm.setCategory("category");
 
-        exceptionRule.expect(ApiException.class);
-        exceptionRule.expectMessage("Please enter valid Brand Category");
-        productDto.create(productForm);
+        try{
+            productDto.create(productForm);
+        }
+        catch(ApiException e){
+            Assert.assertEquals("Product with provided brand and category does not exists", e.getMessage());
+            throw new ApiException("Product with provided brand and category does not exists");
+        }
+
     }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testEmptyBarcodeOnAdd() throws ApiException, IllegalAccessException {
+    @Test(expected = ApiException.class)
+    public void testEmptyBarcodeOnAdd() throws ApiException {
         ProductForm productForm = createProduct(0);
         productForm.setBarcode("");
-        productDto.create(productForm);
+        try{
+            productDto.create(productForm);
+        }
+        catch(ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
     }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testEmptyBrandOnAdd() throws ApiException, IllegalAccessException {
+    @Test(expected = ApiException.class)
+    public void testEmptyBrandOnAdd() throws ApiException {
         ProductForm productForm = createProduct(0);
         productForm.setBrand("");
-        productDto.create(productForm);
+        try{
+            productDto.create(productForm);
+        }
+        catch(ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
     }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testEmptyCategoryOnAdd() throws ApiException, IllegalAccessException {
+    @Test(expected = ApiException.class)
+    public void testEmptyCategoryOnAdd() throws ApiException {
         ProductForm productForm = createProduct(0);
         productForm.setCategory("");
-        productDto.create(productForm);
+        try{
+            productDto.create(productForm);
+        }
+        catch(ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
     }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testEmptyProductNameOnAdd() throws ApiException, IllegalAccessException {
+    @Test(expected = ApiException.class)
+    public void testEmptyProductNameOnAdd() throws ApiException {
         ProductForm productForm = createProduct(0);
         productForm.setName("");
-        productDto.create(productForm);
-    }
+        try{
+            productDto.create(productForm);
+        }
+        catch(ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }    }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testEmptyMrpOnAdd() throws ApiException, IllegalAccessException {
+    @Test(expected = ApiException.class)
+    public void testEmptyMrpOnAdd() throws ApiException {
         ProductForm productForm = createProduct(0);
         productForm.setMrp(null);
-        productDto.create(productForm);
+        try{
+            productDto.create(productForm);
+        }
+        catch(ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
     }
 
     @Test
-    public void testGetAll() throws ApiException, IllegalAccessException {
+    public void testGetAll() throws ApiException {
         for(Integer index = 0; index < 5; index++) {
             ProductForm productForm = createProduct(index);
             productDto.create(productForm);
@@ -106,38 +144,58 @@ public class ProductDtoTest extends AbstractUnitTest {
     }
 
     @Test
-    public void testUpdate() throws ApiException, IllegalAccessException {
+    public void testUpdate() throws ApiException {
         ProductForm productForm = createProduct(0);
         Integer productId = productDto.create(productForm);
-
-        ProductForm productForm1 = new ProductForm();
-        productForm1.setName("new product");
-        productForm1.setMrp(200.0);
-        productDto.update(productId, productForm1);
-
+        productForm.setName("new product");
+        productForm.setMrp(200.0);
+        productDto.update(productId, productForm);
         ProductData productData = productDto.getAllData().get(0);
         assertEquals("new product", productData.getName());
         assertEquals((Double) 200.0, productData.getMrp());
     }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testEmptyProductNameOnUpdate() throws ApiException, IllegalAccessException {
+    @Test(expected = ApiException.class)
+    public void testEmptyProductNameOnUpdate() throws ApiException {
         ProductForm productForm = createProduct(0);
         Integer productId = productDto.create(productForm);
-        ProductForm productForm1 = new ProductForm();
-        productForm1.setName("");
-        productForm1.setMrp(200.0);
-        productDto.update(productId, productForm1);
+        productForm.setName("");
+        productForm.setMrp(200.0);
+        try{
+            productDto.update(productId, productForm);
+        }
+        catch(ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
     }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testEmptyMrpOnUpdate() throws ApiException, IllegalAccessException {
+    @Test(expected = ApiException.class)
+    public void testEmptyMrpOnUpdate() throws ApiException {
         ProductForm productForm = createProduct(0);
         Integer productId = productDto.create(productForm);
-        ProductForm productForm1 = new ProductForm();
-        productForm1.setName("new name");
-        productForm1.setMrp(null);
-        productDto.update(productId, productForm1);
+        productForm.setName("new name");
+        productForm.setMrp(null);
+        try{
+            productDto.update(productId, productForm);
+        }
+        catch(ApiException e){
+            Assert.assertEquals("Input validation failed", e.getMessage());
+            throw new ApiException("Input validation failed");
+        }
+    }
+
+    @Test(expected = ApiException.class)
+    public void testAddOnBarcodeAlreadyExist() throws ApiException {
+        ProductForm productForm = createProduct(0);
+        productDto.create(productForm);
+        try{
+            productDto.create(productForm);
+        }
+        catch (ApiException e){
+            Assert.assertEquals("Provided Product with given barcode already exists",e.getMessage());
+            throw new ApiException("Provided Product with given barcode already exists");
+        }
     }
 
     private void matchData(Integer id, ProductData productData){
@@ -147,7 +205,7 @@ public class ProductDtoTest extends AbstractUnitTest {
         assertEquals("product" + id, productData.getName());
     }
 
-    private ProductForm createProduct(Integer id) throws ApiException, IllegalAccessException {
+    private ProductForm createProduct(Integer id) throws ApiException {
         BrandForm brandForm = new BrandForm();
         brandForm.setBrand("brand" + id);
         brandForm.setCategory("category" + id);

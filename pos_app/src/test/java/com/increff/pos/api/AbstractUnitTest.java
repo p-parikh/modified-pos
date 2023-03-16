@@ -81,13 +81,13 @@ public abstract class AbstractUnitTest {
         //product1 add inventory
         InventoryForm inventoryForm1 = new InventoryForm();
         inventoryForm1.setBarcode("barcode" + id);
-        inventoryForm1.setQty((long) 400);
+        inventoryForm1.setQty(400);
         inventoryDto.create(inventoryForm1);
 
         //product2 add inventory
         InventoryForm inventoryForm2 = new InventoryForm();
         inventoryForm2.setBarcode(id + "barcode");
-        inventoryForm2.setQty((long) 400);
+        inventoryForm2.setQty(400);
         inventoryDto.create(inventoryForm2);
 
 
@@ -130,12 +130,12 @@ public abstract class AbstractUnitTest {
 
         InventoryPojo inventoryPojo1 = new InventoryPojo();
         inventoryPojo1.setProductId(product1Id);
-        inventoryPojo1.setQty((long) 400);
+        inventoryPojo1.setQty(400);
         inventoryApi.create(inventoryPojo1);
 
         InventoryPojo inventoryPojo2 = new InventoryPojo();
         inventoryPojo2.setProductId(product2Id);
-        inventoryPojo2.setQty((long) 400);
+        inventoryPojo2.setQty(400);
         inventoryApi.create(inventoryPojo2);
 
         List<OrderItemPojo> orderItemPojoList = new ArrayList<>();

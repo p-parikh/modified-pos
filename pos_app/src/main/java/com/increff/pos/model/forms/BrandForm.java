@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -12,7 +13,9 @@ import javax.validation.constraints.NotNull;
 public class BrandForm {
 
     @NotNull
+    @NotBlank
     private String brand;
     @NotNull
+    @NotBlank
     private String category;
 }

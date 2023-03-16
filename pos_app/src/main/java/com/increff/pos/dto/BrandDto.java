@@ -40,6 +40,7 @@ public class BrandDto {
     public void update(Integer id, BrandForm brandForm) throws ApiException {
         ValidationUtil.checkValid(brandForm);
         BrandPojo brandPojo = BrandDtoHelper.convertToBrandPojo(brandForm);
+        brandPojo.setId(id);
         if (validateInput(brandPojo)) {
             brandApi.update(id, BrandDtoHelper.normalise(brandPojo));
         }

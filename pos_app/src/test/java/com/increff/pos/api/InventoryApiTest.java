@@ -33,7 +33,7 @@ public class InventoryApiTest  extends AbstractUnitTest {
     public void testAddOnExistingInventory() throws ApiException {
         InventoryPojo inventoryPojo = createInventoryPojo(0);
         inventoryApi.create(inventoryPojo);
-        inventoryPojo.setQty((long)400);
+        inventoryPojo.setQty(800);
         inventoryApi.create(inventoryPojo);
         assertEquals((Integer) 800, inventoryApi.getById(inventoryPojo.getProductId()).getQty());
     }
@@ -42,7 +42,7 @@ public class InventoryApiTest  extends AbstractUnitTest {
     public void testUpdate() throws ApiException {
         InventoryPojo inventoryPojo = createInventoryPojo(0);
         inventoryApi.create(inventoryPojo);
-        inventoryPojo.setQty((long)600);
+        inventoryPojo.setQty(600);
         inventoryApi.update(inventoryPojo.getProductId(), inventoryPojo);
         assertEquals((Integer) 600, inventoryApi.getById(inventoryPojo.getProductId()).getQty());
     }
@@ -74,7 +74,7 @@ public class InventoryApiTest  extends AbstractUnitTest {
 
         InventoryPojo inventoryPojo = new InventoryPojo();
         inventoryPojo.setProductId(productId);
-        inventoryPojo.setQty((long)400);
+        inventoryPojo.setQty(400);
 
         return inventoryPojo;
     }

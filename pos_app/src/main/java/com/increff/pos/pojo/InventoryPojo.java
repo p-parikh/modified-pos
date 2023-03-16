@@ -18,5 +18,5 @@ public class InventoryPojo extends AbstractPojo {
     private Integer productId;
 
     @NotNull
-    private Long qty;
+    private Integer qty;
 }
