@@ -45,10 +45,12 @@ public class PosSecurityFilter extends GenericFilterBean {
             if(!authenticated){
                 myResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
-            Authentication authentication = userDto.convertUserPojoToAuthentication(userData);
-            HttpSession session = httpRequest.getSession(true);
-            SecurityUtil.createContext(session);
-            SecurityUtil.setAuthentication(authentication);
+            else{
+                Authentication authentication = userDto.convertUserPojoToAuthentication(userData);
+                HttpSession session = httpRequest.getSession(true);
+                SecurityUtil.createContext(session);
+                SecurityUtil.setAuthentication(authentication);
+            }
             chain.doFilter(request, response);
         }
     }

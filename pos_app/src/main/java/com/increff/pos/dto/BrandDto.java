@@ -8,6 +8,7 @@ import com.increff.pos.model.data.BrandData;
 import com.increff.pos.model.forms.BrandForm;
 import com.increff.pos.pojo.BrandPojo;
 import com.increff.pos.util.FileConversionUtil;
+import com.increff.pos.util.TsvUtil;
 import com.increff.pos.util.ValidationUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class BrandDto {
     @Autowired
     private BrandApi brandApi;
 
+    @Autowired
+    private TsvUtil tsvUtil;
+
     public List<BrandData> getAllData(){
         List<BrandData> resultSet = new ArrayList<>();
         for (BrandPojo bp : brandApi.getAllEntries()) {
@@ -33,54 +37,27 @@ public class BrandDto {
         return resultSet;
     }
 
-    public BrandData getById(Integer id) throws ApiException{
-        return BrandDtoHelper.convertToBrandData(brandApi.getById(id));
-    }
-
     public void update(Integer id, BrandForm brandForm) throws ApiException {
         ValidationUtil.checkValid(brandForm);
         BrandPojo brandPojo = BrandDtoHelper.convertToBrandPojo(brandForm);
         brandPojo.setId(id);
-        if (validateInput(brandPojo)) {
-            brandApi.update(id, BrandDtoHelper.normalise(brandPojo));
-        }
+        brandApi.update(id, BrandDtoHelper.normalise(brandPojo));
     }
 
     public Integer create(BrandForm brandForm) throws ApiException {
         ValidationUtil.checkValid(brandForm);
         BrandPojo brandPojo = BrandDtoHelper.convertToBrandPojo(brandForm);
-        if (validateInput(brandPojo)) {
-            brandApi.create(BrandDtoHelper.normalise(brandPojo));
-        }
+        brandApi.create(BrandDtoHelper.normalise(brandPojo));
         return brandPojo.getId();
     }
 
     public void upload(MultipartFile brandTsv) throws Exception {
-        ValidationUtil.checkValid(brandTsv);
-        File convertedTsv = FileConversionUtil.convert(brandTsv);
-        String fileExtension = FilenameUtils.getExtension(convertedTsv.toString());
-        if(!fileExtension.equals("tsv")){
-            throw new ApiException("Input file is not a valid TSV file");
+        File convertedTsv = FileConversionUtil.convert(brandTsv); // multipart file to file conversion
+        List<BrandForm> uploadList = tsvUtil.convert(convertedTsv,BrandForm.class); // converting file into list of class objects
+        ValidationUtil.checkValid(uploadList);
+        for(BrandForm brandForm : uploadList){
+            BrandPojo brandPojo = BrandDtoHelper.convertToBrandPojo(brandForm);
+            brandApi.create(BrandDtoHelper.normalise(brandPojo));
         }
-        TsvToJson tsvParse = new TsvToJson();
-        List<HashMap<String, Object>> values = tsvParse.tsvToJson(convertedTsv);
-        String brand = "brand";
-        String category = "category";
-        for(HashMap<String, Object> line : values){
-            BrandForm brandForm = new BrandForm();
-            brandForm.setCategory((String) line.get(brand));
-            brandForm.setBrand((String) line.get(category));
-            create(brandForm);
-        }
-    }
-
-    public boolean validateInput(BrandPojo brandPojo) throws ApiException {
-        BrandPojo brandPojoWithBrandCategoryCombo = brandApi
-                .selectWithBrandAndCategory(brandPojo.getBrand(), brandPojo.getCategory());
-        if (brandPojoWithBrandCategoryCombo != null) {
-            if (brandPojoWithBrandCategoryCombo.getId() != brandPojo.getId())
-                throw new ApiException("Provided Brand Category Pair already exists");
-        }
-        return true;
     }
 }

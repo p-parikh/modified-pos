@@ -97,6 +97,18 @@ public class OrderItemApiTest extends AbstractUnitTest{
         orderItemApi.delete(1);
     }
 
+    @Test(expected = ApiException.class)
+    public void testGetOrderWithWrongDatetime() throws ApiException {
+        ZonedDateTime datetime = ZonedDateTime.now(ZoneId.systemDefault());
+        try {
+            orderApi.getByDatetime(datetime);
+        }
+        catch (ApiException e){
+            assertEquals("Order with given datetime does not exists", e.getMessage());
+            throw new ApiException("Order with given datetime does not exists");
+        }
+    }
+
 
     private void matchOrder(Integer id, List<OrderItemPojo> orderItemPojoList) throws ApiException {
         Integer productId1 = productApi.selectWithBarcode("barcode" + id).getId();

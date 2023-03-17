@@ -55,8 +55,6 @@ public class OrderDao extends AbstractDao{
 
     public List<OrderPojo> getOrderBetweenStartAndEndDate(ZonedDateTime startDate, ZonedDateTime endDate){
         TypedQuery<OrderPojo> query = em().createQuery(SELECT_BY_START_AND_END_DATE, OrderPojo.class);
-        System.out.println("Start Date: "+startDate);
-        System.out.println("End Date:" +endDate);
         query.setParameter("startDateTime", startDate);
         query.setParameter("endDateTime", endDate);
         return query.getResultList();

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BrandDao.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">POS</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.dao</a> &gt; <span class="el_source">BrandDao.java</span></div><h1>BrandDao.java</h1><pre class="source lang-java linenums">package com.increff.pos.dao;
+
+
+import com.increff.pos.exception.ApiException;
+import com.increff.pos.pojo.BrandPojo;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.TypedQuery;
+import java.util.List;
+
+@Repository
+@Transactional
+<span class="fc" id="L14">public class BrandDao extends AbstractDao{</span>
+
+    private static final String SELECT_ALL= &quot;select b from Brand b&quot;;
+    private static final String SELECT_BY_ID = &quot;select b from Brand b where id=:id&quot;;
+
+    private static final String SELECT_ALL_ID = &quot;select b.id from Brand b&quot;;
+    private static final String SELECT_BY_BRAND_AND_CATEGORY = &quot;select b from Brand b where b.brand=:brand and b.category=:category&quot;;
+
+    public List&lt;BrandPojo&gt; viewAll(){
+<span class="fc" id="L23">        TypedQuery&lt;BrandPojo&gt; query = em().createQuery(SELECT_ALL, BrandPojo.class);</span>
+<span class="fc" id="L24">        return query.getResultList();</span>
+    }
+
+    public BrandPojo getById(Integer id){
+<span class="fc" id="L28">        TypedQuery&lt;BrandPojo&gt; query = em().createQuery(SELECT_BY_ID, BrandPojo.class);</span>
+<span class="fc" id="L29">        query.setParameter(&quot;id&quot;, id);</span>
+<span class="fc" id="L30">        return getSingleRow(query);</span>
+    }
+
+    public void insert(BrandPojo bp){
+<span class="fc" id="L34">        em().persist(bp);</span>
+<span class="fc" id="L35">    }</span>
+
+    public void update(Integer id, BrandPojo bp) throws ApiException{
+<span class="fc" id="L38">       BrandPojo db_bp = getById(id);</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">       if(db_bp == null){</span>
+<span class="nc" id="L40">           throw new ApiException(&quot;Brand doesn't exists with given Id&quot;);</span>
+       }
+<span class="fc" id="L42">       db_bp.setBrand(bp.getBrand());</span>
+<span class="fc" id="L43">       db_bp.setCategory((bp.getCategory()));</span>
+<span class="fc" id="L44">    }</span>
+
+    public BrandPojo selectWithBrandAndCategory(String brand, String category) {
+<span class="fc" id="L47">        TypedQuery&lt;BrandPojo&gt; query = em().createQuery(SELECT_BY_BRAND_AND_CATEGORY, BrandPojo.class);</span>
+<span class="fc" id="L48">        query.setParameter(&quot;brand&quot;, brand);</span>
+<span class="fc" id="L49">        query.setParameter(&quot;category&quot;, category);</span>
+<span class="fc" id="L50">        return getSingleRow(query);</span>
+    }
+
+    public List&lt;Integer&gt; selectAllId(){
+<span class="nc" id="L54">        TypedQuery&lt;Integer&gt; query = em().createQuery(SELECT_ALL_ID, Integer.class);</span>
+<span class="nc" id="L55">        return query.getResultList();</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

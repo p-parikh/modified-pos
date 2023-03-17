@@ -32,6 +32,25 @@ public class ValidationUtil {
             error += violation.getMessage();
             errorList.add(error);
         }
-        throw new ApiException(400, "Input validation failed", errorList);
+        throw new ApiException("Input validation failed", errorList);
+    }
+
+    public static <T> void checkValid(List<T> obj) throws ApiException {
+       //TODO checkValid for List - done
+        List<String> errorList = new ArrayList<>();
+        for(Object temp : obj){
+            Set<ConstraintViolation<T>> violations = validate((T)temp);
+            for (ConstraintViolation<T> violation : violations) {
+                String error = new String("Error in field: ");
+                error += violation.getPropertyPath().toString();
+                error += ", Message: ";
+                error += violation.getMessage();
+                errorList.add(error);
+            }
+        }
+        if(errorList.isEmpty()){
+            return;
+        }
+        throw new ApiException("Input validation failed", errorList);
     }
 }

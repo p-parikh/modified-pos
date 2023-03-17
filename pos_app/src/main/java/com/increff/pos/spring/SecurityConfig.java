@@ -31,16 +31,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http//
                 // Match only these URLs
-                .requestMatchers()//
-                .antMatchers("/api/**")//
-                .and().authorizeRequests()//
+                .authorizeRequests()//
                 .antMatchers("/api/supervisor/**").hasAuthority("supervisor")//
                 .antMatchers("/api/**").hasAnyAuthority("supervisor", "operator")//
                 // Ignore CSRF
                 .and().csrf().disable()
                 .addFilterBefore(posSecurityFilter, BasicAuthenticationFilter.class)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
 
         http.cors();
         http
@@ -49,10 +46,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 {
                     response.setContentType("application/json;charset=UTF-8");
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    response.getWriter().write(new ObjectMapper().createObjectNode()
+                    response.getOutputStream().write(new ObjectMapper().createObjectNode()
                             .put("timestamp", ZonedDateTime.now().toString())
                             .put("message", "Access denied")
-                            .toString());
+                            .toString().getBytes());
+//                    response.getWriter().write(new ObjectMapper().createObjectNode()
+//                            .put("timestamp", ZonedDateTime.now().toString())
+//                            .put("message", "Access denied")
+//                            .toString());
                 });
     }
 

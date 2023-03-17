@@ -80,7 +80,6 @@ public class DailyReportDto {
     }
 
     public void generateDailyReport(ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
-        //orderPojoList stores all the orders which were placed and invoice was created between startDateTime and endDateTime
         List<OrderPojo> orderPojoList = orderApi.getOrderBetweenStartEndDate(startDateTime, endDateTime);
         DailyReportPojo dailyReportPojo = new DailyReportPojo();
         dailyReportPojo.setReportDate(startDateTime);
@@ -99,7 +98,6 @@ public class DailyReportDto {
         dailyReportPojo.setTotalItems(totalItem);
         dailyReportPojo.setTotalRevenue(totalRevenue);
         dailyReportApi.add(dailyReportPojo);
-        logger.info("Daily Report generated successfully");
     }
 
 }

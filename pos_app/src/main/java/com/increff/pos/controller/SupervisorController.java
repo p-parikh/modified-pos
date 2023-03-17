@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Api
@@ -93,22 +94,16 @@ public class SupervisorController {
         inventoryDto.upload(file);
     }
 
-    @ApiOperation(value = "Adds a user")
+    @ApiOperation(value = "Create user")
     @RequestMapping(path = "/users/create", method = RequestMethod.POST)
     public void addUser(@RequestBody UserForm userForm) throws ApiException, IllegalAccessException {
         userDto.addUser(userForm);
     }
 
-    @ApiOperation(value = "Updates a user")
+    @ApiOperation(value = "Update user")
     @RequestMapping(path = "/users/{userId}", method = RequestMethod.PUT)
     public void updateUser(@PathVariable Integer userId, @RequestBody UserForm userForm) throws ApiException, IllegalAccessException {
         userDto.updateUser(userId, userForm);
-    }
-
-    @ApiOperation(value = "Gets list of all users")
-    @RequestMapping(path = "/users/{userId}", method = RequestMethod.GET)
-    public UserData getUser(@PathVariable Integer userId) throws ApiException {
-        return userDto.getById(userId);
     }
 
     @ApiOperation(value = "Gets list of all users")
@@ -119,20 +114,20 @@ public class SupervisorController {
 
     @ApiOperation(value= "Get Inventory report")
     @RequestMapping(path= "/inventoryReport/download", method = RequestMethod.GET, produces = "text/csv; charset=UTF-8")
-    public ResponseEntity<Object> getInventoryReport(ResponseEntity response) throws Exception{
-        return reportDto.getInventoryReportData();
+    public void getInventoryReport(HttpServletResponse httpServletResponse) throws Exception{
+         reportDto.getInventoryReportData(httpServletResponse);
     }
 
     @ApiOperation(value= "Get Brand report")
     @RequestMapping(path= "/brandReport/download", method = RequestMethod.GET, produces = "text/csv; charset=UTF-8")
-    public ResponseEntity<Object> getBrandReport() throws Exception{
-        return reportDto.getBrandReportData();
+    public void getBrandReport(HttpServletResponse httpServletResponse) throws Exception{
+         reportDto.getBrandReportData(httpServletResponse);
     }
 
     @ApiOperation(value= "Get Sales report")
     @RequestMapping(path="/salesReport/download", method = RequestMethod.GET, produces = "text/csv; charset=UTF-8")
-    public ResponseEntity<Object> getSalesReport(@RequestParam String startDateString, @RequestParam String endDateString) throws Exception{
-        return reportDto.getSalesReportData(startDateString, endDateString);
+    public void getSalesReport(HttpServletResponse httpServletResponse,@RequestParam String startDateString, @RequestParam String endDateString) throws Exception{
+         reportDto.getSalesReportData(startDateString, endDateString, httpServletResponse);
     }
 
     @ApiOperation(value = "Get Daily report")

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderItemPojo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">POS</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.pojo</a> &gt; <span class="el_source">OrderItemPojo.java</span></div><h1>OrderItemPojo.java</h1><pre class="source lang-java linenums">package com.increff.pos.pojo;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
+@Getter
+<span class="pc" id="L11">@Setter</span>
+<span class="fc" id="L12">@NoArgsConstructor</span>
+@Entity(name = &quot;Orderitem&quot;)
+@Table(uniqueConstraints = {@UniqueConstraint(name=&quot;orderId_productId_uk&quot;, columnNames = {&quot;orderId&quot;, &quot;productId&quot;})})
+public class OrderItemPojo extends AbstractPojo{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+<span class="fc" id="L19">    private Integer id;</span>
+
+    @NotNull
+<span class="fc" id="L22">    private Integer orderId;</span>
+
+    @NotNull
+<span class="fc" id="L25">    private Integer productId;</span>
+
+    @NotNull
+<span class="fc" id="L28">    private Integer quantity;</span>
+
+    @NotNull
+<span class="fc" id="L31">    private Double sellingPrice;</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

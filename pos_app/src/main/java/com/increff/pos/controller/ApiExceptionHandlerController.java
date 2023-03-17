@@ -20,6 +20,7 @@ public class ApiExceptionHandlerController {
     public MessageData handle(ApiException apiException) {
         MessageData messageData = new MessageData();
         messageData.setMessage(apiException.getMessage());
+        messageData.setErrorlist(apiException.getErrorlist());
         return messageData;
     }
 

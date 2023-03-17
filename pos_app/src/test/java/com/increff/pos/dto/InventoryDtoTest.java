@@ -3,6 +3,7 @@ package com.increff.pos.dto;
 import com.increff.pos.api.AbstractUnitTest;
 import com.increff.pos.exception.ApiException;
 import com.increff.pos.model.data.InventoryData;
+
 import com.increff.pos.model.forms.BrandForm;
 import com.increff.pos.model.forms.InventoryForm;
 import com.increff.pos.model.forms.ProductForm;
@@ -11,7 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import javax.validation.ConstraintViolationException;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.List;
 
@@ -169,6 +170,35 @@ public class InventoryDtoTest extends AbstractUnitTest {
         inventoryForm.setQty(100);
 
         return inventoryForm;
+    }
+
+    @Test
+    public void testUpload()
+            throws Exception {
+        MockMultipartFile file
+                = new MockMultipartFile(
+                "file",
+                "inventory.tsv",
+                "text/tab-separated-values",
+                ("barcode\tqty\r\n" +
+                        "barcode0\t100\u001a").getBytes()
+        );
+        BrandForm brandForm = new BrandForm();
+        brandForm.setBrand("brand0");
+        brandForm.setCategory("category0");
+        brandDto.create(brandForm);
+
+        ProductForm productForm = new ProductForm();
+        productForm.setBarcode("barcode0");
+        productForm.setBrand("brand0");
+        productForm.setCategory("category0");
+        productForm.setName("product0");
+        productForm.setMrp(100.0);
+        productDto.create(productForm);
+
+        inventoryDto.upload(file);
+        List<InventoryData> inventoryDataList = inventoryDto.getAllData();
+        assertEquals(1,inventoryDataList.size());
     }
 
 }

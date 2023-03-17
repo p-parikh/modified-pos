@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductDao.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">POS</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.dao</a> &gt; <span class="el_source">ProductDao.java</span></div><h1>ProductDao.java</h1><pre class="source lang-java linenums">package com.increff.pos.dao;
+
+import com.increff.pos.exception.ApiException;
+import com.increff.pos.pojo.ProductPojo;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.TypedQuery;
+import java.util.List;
+
+@Repository
+@Transactional
+<span class="fc" id="L13">public class ProductDao extends AbstractDao {</span>
+
+    private static final String SELECT_BY_ID = &quot;select p from Product p where id=:id&quot;;
+
+    private static final String SELECT_ALL = &quot;select p from Product p&quot;;
+
+    private static final String SELECT_BY_BARCODE = &quot;select p from Product p where barcode=:barcode&quot;;
+
+
+
+    public List&lt;ProductPojo&gt; viewAll() {
+<span class="fc" id="L24">        TypedQuery&lt;ProductPojo&gt; query = em().createQuery(SELECT_ALL, ProductPojo.class);</span>
+<span class="fc" id="L25">        return query.getResultList();</span>
+    }
+
+    public ProductPojo viewById(Integer id) {
+<span class="fc" id="L29">        TypedQuery&lt;ProductPojo&gt; query = em().createQuery(SELECT_BY_ID, ProductPojo.class);</span>
+<span class="fc" id="L30">        query.setParameter(&quot;id&quot;, id);</span>
+<span class="fc" id="L31">        return getSingleRow(query);</span>
+    }
+
+    public void insert(ProductPojo productPojo) {
+<span class="fc" id="L35">        em().persist(productPojo);</span>
+<span class="fc" id="L36">    }</span>
+
+    public void update(Integer id, ProductPojo productPojo) throws ApiException {
+<span class="fc" id="L39">        ProductPojo productPojo_db = viewById(id);</span>
+
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (productPojo_db == null) {</span>
+<span class="nc" id="L42">            throw new ApiException(&quot;Product does not exists with given id&quot;);</span>
+        }
+<span class="fc" id="L44">        productPojo_db.setBarcode(productPojo.getBarcode());</span>
+<span class="fc" id="L45">        productPojo_db.setMrp(productPojo.getMrp());</span>
+<span class="fc" id="L46">        productPojo_db.setName(productPojo.getName());</span>
+<span class="fc" id="L47">        productPojo_db.setBrandCategory(productPojo.getBrandCategory());</span>
+<span class="fc" id="L48">    }</span>
+
+    public ProductPojo selectWithBarCode(String barcode) {
+<span class="fc" id="L51">        TypedQuery&lt;ProductPojo&gt; query = em().createQuery(SELECT_BY_BARCODE, ProductPojo.class);</span>
+<span class="fc" id="L52">        query.setParameter(&quot;barcode&quot;, barcode);</span>
+<span class="fc" id="L53">        return getSingleRow(query);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

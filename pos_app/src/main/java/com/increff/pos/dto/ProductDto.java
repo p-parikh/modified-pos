@@ -12,6 +12,7 @@ import com.increff.pos.pojo.BrandPojo;
 import com.increff.pos.pojo.InventoryPojo;
 import com.increff.pos.pojo.ProductPojo;
 import com.increff.pos.util.FileConversionUtil;
+import com.increff.pos.util.TsvUtil;
 import com.increff.pos.util.ValidationUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,21 +34,15 @@ public class ProductDto {
     private BrandApi brandApi;
 
     @Autowired
-    private InventoryApi inventoryApi;
+    private TsvUtil tsvUtil;
 
     public List<ProductData> getAllData() throws ApiException{
         List<ProductData> resultSet = new ArrayList<>();
-        for(ProductPojo pp : productApi.getAllEntries()){
-            BrandPojo brandPojo = brandApi.getById(pp.getBrandCategory());
-            resultSet.add(ProductDtoHelper.convertToProductData(pp, brandPojo));
+        for(ProductPojo productPojo : productApi.getAllEntries()){
+            BrandPojo brandPojo = brandApi.getById(productPojo.getBrandCategory());
+            resultSet.add(ProductDtoHelper.convertToProductData(productPojo, brandPojo));
         }
         return resultSet;
-    }
-
-    public ProductData getById(Integer id) throws ApiException {
-        ProductPojo productPojo = productApi.getById(id);
-        BrandPojo brandPojo = brandApi.getById(productPojo.getBrandCategory());
-        return ProductDtoHelper.convertToProductData(productPojo, brandPojo);
     }
 
     public void update(Integer id, ProductForm productForm) throws ApiException{
@@ -58,10 +53,7 @@ public class ProductDto {
             throw new ApiException("Product with provided brand and category does not exists");
         }
         ProductPojo productPojo = ProductDtoHelper.convertToProductPojo(productForm, brandPojo.getId());
-        productPojo.setId(id);
-        if(validateInput(productPojo)){
-            productApi.update(id, ProductDtoHelper.normalise(productPojo));
-        }
+        productApi.update(id, ProductDtoHelper.normalise(productPojo));
     }
 
     public Integer create(ProductForm productForm) throws ApiException{
@@ -72,49 +64,35 @@ public class ProductDto {
             throw new ApiException("Product with provided brand and category does not exists");
         }
         ProductPojo productPojo = ProductDtoHelper.convertToProductPojo(productForm, brandPojo.getId());
-        if(validateInput(productPojo)){
-            productApi.create(ProductDtoHelper.normalise(productPojo));
-        }
+        productApi.create(ProductDtoHelper.normalise(productPojo));
         return productPojo.getId();
     }
 
     public void upload(MultipartFile productTsv) throws Exception {
+        //TODO mock multipart spring package for test
         File convertedTsv = FileConversionUtil.convert(productTsv);
-        String fileExtension = FilenameUtils.getExtension(convertedTsv.toString());
-        if(!fileExtension.equals("tsv")){
-            throw new ApiException("Input file is not a valid TSV file");
-        }
-        TsvToJson tsvParse =     new TsvToJson();
-        List<HashMap<String, Object>> values = tsvParse.tsvToJson(convertedTsv);
-        String name = "name";
-        String mrp = "mrp";
-        String barcode = "barcode";
-        String brand = "brand";
-        String category = "category";
-        for(HashMap<String, Object> line : values){
-            ProductForm productForm = new ProductForm();
-            productForm.setBarcode((String) line.get(barcode));
-            productForm.setMrp( Double.parseDouble((String) line.get(mrp)));
-            productForm.setBrand((String) line.get(brand));
-            productForm.setCategory((String) line.get(category));
-            productForm.setName((String) line.get(name));
-            System.out.println("Barcode: " + productForm.getBarcode() + " Mrp: " +
-                    productForm.getMrp() + " Brand: " + productForm.getBrand() + " Category: " + productForm.getCategory() + " Name: " + productForm.getName());
-            create(productForm);
+        List<ProductForm> uploadList = tsvUtil.convert(convertedTsv, ProductForm.class);
+        ValidationUtil.checkValid(uploadList);
+        validateBrandCategory(uploadList);
+        for(ProductForm productForm : uploadList) {
+            BrandPojo brandPojo = brandApi.selectWithBrandAndCategory(productForm.getBrand(), productForm.getCategory());
+            ProductPojo productPojo = ProductDtoHelper.convertToProductPojo(productForm, brandPojo.getId());
+            productApi.create(productPojo);
         }
     }
 
-    private boolean validateInput(ProductPojo productPojo) throws ApiException {
-        List<Integer> listOfBrandIds = brandApi.selectAllIDs();
-        if(!listOfBrandIds.contains(productPojo.getBrandCategory())){
-            throw new ApiException("Please enter valid Brand Category");
+    private void validateBrandCategory(List<ProductForm> uploadList) throws ApiException{
+        List<String> errorList = new ArrayList<>();
+        for(ProductForm productForm : uploadList){
+            BrandPojo brandPojo = brandApi.selectWithBrandAndCategory(productForm.getBrand(), productForm.getCategory());
+            if(brandPojo == null){
+                String error = new String("Error: Brand: " +productForm.getBrand() +
+                        " and category: " + productForm.getCategory() + " does not exists");
+                errorList.add(error);
+            }
         }
-        ProductPojo productWithBarcode = productApi.selectWithBarcode(productPojo.getBarcode());
-
-        if(productWithBarcode != null){
-            if(productPojo.getId() != productWithBarcode.getId())
-                throw new ApiException("Provided Product with given barcode already exists");
-        }
-        return true;
+        if(errorList.isEmpty())
+            return;
+        throw new ApiException("Brand Category Incorrect", errorList);
     }
 }

@@ -1,5 +1,6 @@
 com/increff/pos/dto/BrandDtoTest.class
 com/increff/pos/api/OrderItemApiTest.class
+com/increff/pos/dto/ReportDtoTest.class
 com/increff/pos/dto/OrderItemDtoTest.class
 com/increff/pos/dto/PdfGeneratorDtoTest.class
 com/increff/pos/dto/ProductDtoTest.class

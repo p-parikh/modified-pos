@@ -18,10 +18,6 @@ public class OrderApi {
     @Autowired
     private OrderDao orderDao;
 
-    public List<OrderPojo> getAllEntries(){
-        return orderDao.viewAll();
-    }
-
     public OrderPojo getById(Integer id) throws ApiException {
         OrderPojo orderPojo = orderDao.viewById(id);
         if(orderPojo == null){
@@ -45,19 +41,8 @@ public class OrderApi {
         orderDao.insert(orderPojo);
     }
 
-    public void update(Integer id, OrderPojo orderPojo) throws ApiException{
-        orderDao.update(id,orderPojo);
-    }
-
     public List<OrderPojo> getOrderBetweenStartEndDate(ZonedDateTime startDate, ZonedDateTime endDate){
-        System.out.println("inside get order between start end date");
-        List<OrderPojo>  orderPojoList= orderDao.getOrderBetweenStartAndEndDate(startDate,endDate);
-        int count = 0;
-        for(OrderPojo orderPojo : orderPojoList){
-            count++;
-        }
-        System.out.println("orderApi count: " +count);
-        return orderPojoList;
+        return orderDao.getOrderBetweenStartAndEndDate(startDate,endDate);
     }
 
     public void delete(Integer id){

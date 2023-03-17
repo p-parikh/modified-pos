@@ -25,7 +25,7 @@ public class BrandApi {
     public BrandPojo getById(Integer id) throws ApiException{
         BrandPojo db_bp = brandRepo.getById(id);
         if(db_bp == null){
-            throw new ApiException("Brand doesn't exists with given Id");
+            throw new ApiException("Brand does not exists with given Id");
         }
         return db_bp;
     }
@@ -41,11 +41,6 @@ public class BrandApi {
 
     public BrandPojo selectWithBrandAndCategory(String brand, String category){
         return brandRepo.selectWithBrandAndCategory(brand, category);
-    }
-
-    public List<Integer> selectAllIDs(){
-        List<Integer> result = brandRepo.selectAllId();
-        return result;
     }
 
 }

@@ -36,34 +36,16 @@ public class UserApi {
         return userDao.viewAll();
     }
 
-    public UserPojo getById(Integer id) throws ApiException{
-        UserPojo userPojo_db = userDao.viewById(id);
-        if(userPojo_db == null){
-            throw new ApiException("User with provided id does not exists.");
-        }
-        return userPojo_db;
-    }
-
     public UserPojo getByEmail(String email) throws ApiException{
         UserPojo userPojo_db = userDao.selectByEmail(email);
         if(userPojo_db == null){
-            throw new ApiException("User with provided email id does not exists.");
+            throw new ApiException("User with provided email id does not exists");
         }
         return userPojo_db;
     }
 
-    public void assignRole(UserPojo userPojo) throws ApiException{
-        if(userPojo.getEmail().equals(supervisorEmail)){
-            userPojo.setRole("supervisor");
-        }
-        else{
-            userPojo.setRole("operator");
-        }
-        addUser(userPojo);
-    }
-
     public void update(Integer id, UserPojo userPojo) throws ApiException{
-        UserPojo userPojo_db = getById(id);
+        UserPojo userPojo_db = userDao.viewById(id);
         UserPrincipal principal = SecurityUtil.getPrincipal();
         if(principal == null){
             throw new ApiException("Unable to update user");

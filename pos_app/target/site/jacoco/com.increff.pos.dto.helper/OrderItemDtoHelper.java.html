@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderItemDtoHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">POS</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.dto.helper</a> &gt; <span class="el_source">OrderItemDtoHelper.java</span></div><h1>OrderItemDtoHelper.java</h1><pre class="source lang-java linenums">package com.increff.pos.dto.helper;
+
+import com.increff.pos.api.ProductApi;
+import com.increff.pos.model.data.OrderItemData;
+import com.increff.pos.model.forms.OrderItemForm;
+import com.increff.pos.pojo.OrderItemPojo;
+import com.increff.pos.pojo.ProductPojo;
+import org.springframework.stereotype.Component;
+
+<span class="nc" id="L10">public class OrderItemDtoHelper {</span>
+    public static OrderItemPojo convertToOrderItemPojo(OrderItemForm orderItemForm, Integer productId, Integer orderId){
+<span class="fc" id="L12">        OrderItemPojo orderItemPojo = new OrderItemPojo();</span>
+<span class="fc" id="L13">        orderItemPojo.setSellingPrice(orderItemForm.getSellingPrice());</span>
+<span class="fc" id="L14">        orderItemPojo.setQuantity(orderItemForm.getQuantity());</span>
+<span class="fc" id="L15">        orderItemPojo.setOrderId(orderId);</span>
+<span class="fc" id="L16">        orderItemPojo.setProductId(productId);</span>
+<span class="fc" id="L17">        return orderItemPojo;</span>
+    }
+
+    public static OrderItemData convertToOrderItemData(OrderItemPojo orderItemPojo, ProductPojo productPojo){
+<span class="fc" id="L21">        OrderItemData orderItemData = new OrderItemData();</span>
+<span class="fc" id="L22">        orderItemData.setBarcode(productPojo.getBarcode());</span>
+<span class="fc" id="L23">        orderItemData.setQuantity(orderItemPojo.getQuantity());</span>
+<span class="fc" id="L24">        orderItemData.setSellingPrice(orderItemPojo.getSellingPrice());</span>
+<span class="fc" id="L25">        orderItemData.setOrderId(orderItemPojo.getOrderId());</span>
+<span class="fc" id="L26">        orderItemData.setId(orderItemPojo.getId());</span>
+<span class="fc" id="L27">        return orderItemData;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

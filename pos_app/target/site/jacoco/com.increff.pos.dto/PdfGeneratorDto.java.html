@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PdfGeneratorDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">POS</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.dto</a> &gt; <span class="el_source">PdfGeneratorDto.java</span></div><h1>PdfGeneratorDto.java</h1><pre class="source lang-java linenums">package com.increff.pos.dto;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.increff.pos.api.OrderApi;
+import com.increff.pos.api.OrderItemApi;
+import com.increff.pos.api.ProductApi;
+import com.increff.pos.exception.ApiException;
+import com.increff.pos.model.data.InvoiceData;
+import com.increff.pos.model.data.InvoiceItemData;
+import com.increff.pos.pojo.OrderItemPojo;
+import com.increff.pos.pojo.OrderPojo;
+import com.increff.pos.pojo.ProductPojo;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+
+@Component
+<span class="fc" id="L33">public class PdfGeneratorDto {</span>
+    private static final String PDF_FILE_PATH = &quot;src/main/resources/PdfFiles/invoice_&quot;;
+<span class="fc" id="L35">    private final Logger logger = Logger.getLogger(PdfGeneratorDto.class);</span>
+
+    public static final String DATE_FORMAT_DMY = &quot;dd-MM-yyyy&quot;;
+    public static final String TIME_FORMAT = &quot;HH:mm:ss&quot;;
+
+//    @Value(&quot;${pdfApp.url}&quot;)
+<span class="fc" id="L41">    private String pdfAppUrl = &quot;http://localhost:9001/pdf/api/invoice/generate-invoice&quot;;</span>
+
+//    @Value(&quot;${pdfFilePath}&quot;)
+<span class="fc" id="L44">    private String pdfFilePath = &quot;src/main/resources/PdfFiles&quot;;</span>
+    @Autowired
+    private OrderApi orderApi;
+    @Autowired
+    private RestTemplate restTemplate;
+    @Autowired
+    private ProductApi productApi;
+
+    @Autowired
+    private OrderItemApi orderItemApi;
+
+    public void  generatePdf(Integer id) throws ApiException, JsonProcessingException {
+<span class="fc" id="L56">        ZonedDateTime currentZonedDateTime = ZonedDateTime.now();</span>
+<span class="fc" id="L57">        OrderPojo orderPojo = orderApi.getById(id);</span>
+<span class="fc" id="L58">        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT_DMY);</span>
+<span class="fc" id="L59">        String currentDate = currentZonedDateTime.format(dateTimeFormatter);</span>
+<span class="fc" id="L60">        dateTimeFormatter = DateTimeFormatter.ofPattern(TIME_FORMAT);</span>
+<span class="fc" id="L61">        String currentTime = currentZonedDateTime.format(dateTimeFormatter);</span>
+<span class="fc" id="L62">        InvoiceData invoiceData = getInvoiceDetails(orderPojo, currentDate, currentTime);</span>
+//        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+//        String json = ow.writeValueAsString(invoiceData);
+//        System.out.println(json);
+        String base64;
+        ResponseEntity&lt;String&gt; response;
+        try{
+<span class="fc" id="L69">            response = restTemplate.postForEntity(pdfAppUrl, invoiceData, String.class);</span>
+<span class="fc" id="L70">            System.out.println(response.getBody());</span>
+<span class="nc" id="L71">        } catch (Exception e){</span>
+<span class="nc" id="L72">            e.printStackTrace();</span>
+<span class="nc" id="L73">            throw new ApiException(&quot;Unable to create invoice as invoice-app is not running.&quot;);</span>
+<span class="fc" id="L74">        }</span>
+
+<span class="fc" id="L76">        base64 = response.getBody();</span>
+<span class="fc" id="L77">        File pdfDir = new File(pdfFilePath);</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        if(!pdfDir.mkdirs()){</span>
+<span class="fc" id="L79">            logger.info(&quot;PdfFiles folder created successfully&quot;);</span>
+        }
+<span class="fc" id="L81">        String pdfFileName = &quot;invoice_&quot; + invoiceData.getInvoiceNumber() + &quot;.pdf&quot;;</span>
+<span class="fc" id="L82">        File file = new File(pdfDir, pdfFileName);</span>
+
+<span class="fc" id="L84">        try (FileOutputStream fos = new FileOutputStream(file) ) {</span>
+<span class="fc" id="L85">            byte[] decoder = Base64.getDecoder().decode(base64);</span>
+<span class="fc" id="L86">            fos.write(decoder);</span>
+<span class="nc" id="L87">        } catch (Exception e) {</span>
+<span class="nc" id="L88">            e.printStackTrace();</span>
+<span class="fc" id="L89">        }</span>
+
+<span class="fc" id="L91">    }</span>
+
+    private InvoiceData getInvoiceDetails(OrderPojo orderPojo, String currentDate, String currentTime) throws ApiException{
+<span class="fc" id="L94">        List&lt;OrderItemPojo&gt; orderItemPojoList = orderItemApi.selectByOrderId(orderPojo.getId());</span>
+<span class="fc" id="L95">        InvoiceData invoiceData = new InvoiceData();</span>
+<span class="fc" id="L96">        invoiceData.setInvoiceDate(currentDate);</span>
+<span class="fc" id="L97">        invoiceData.setInvoiceTime(currentTime);</span>
+<span class="fc" id="L98">        invoiceData.setInvoiceNumber(orderPojo.getId());</span>
+<span class="fc" id="L99">        Double totalAmount = 0.0;</span>
+<span class="fc" id="L100">        int sno = 1;</span>
+<span class="fc" id="L101">        List&lt;InvoiceItemData&gt; invoiceItemDataList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        for(OrderItemPojo orderItemPojo : orderItemPojoList){</span>
+<span class="fc" id="L103">            InvoiceItemData invoiceItemData = new InvoiceItemData();</span>
+<span class="fc" id="L104">            ProductPojo productPojo = productApi.getById(orderItemPojo.getProductId());</span>
+<span class="fc" id="L105">            invoiceItemData.setBarcode(productPojo.getBarcode());</span>
+<span class="fc" id="L106">            invoiceItemData.setSno(sno++);</span>
+<span class="fc" id="L107">            invoiceItemData.setProductName(productPojo.getName());</span>
+<span class="fc" id="L108">            invoiceItemData.setQuantity(orderItemPojo.getQuantity());</span>
+<span class="fc" id="L109">            invoiceItemData.setSellingPrice(orderItemPojo.getSellingPrice());</span>
+<span class="fc" id="L110">            invoiceItemData.setTotal(orderItemPojo.getQuantity() * orderItemPojo.getSellingPrice());</span>
+<span class="fc" id="L111">            totalAmount += invoiceItemData.getTotal();</span>
+<span class="fc" id="L112">            invoiceItemDataList.add(invoiceItemData);</span>
+<span class="fc" id="L113">        }</span>
+<span class="fc" id="L114">        invoiceData.setTotalAmount(totalAmount);</span>
+<span class="fc" id="L115">        invoiceData.setInvoiceItemDataList(invoiceItemDataList);</span>
+<span class="fc" id="L116">        return invoiceData;</span>
+    }
+
+    public String downloadInvoice(Integer orderId) throws IOException {
+<span class="fc" id="L120">        String filePath = PDF_FILE_PATH + orderId + &quot;.pdf&quot;;</span>
+
+<span class="fc" id="L122">        File file = new File(filePath);</span>
+<span class="fc" id="L123">        byte[] bytesArray = new byte[(int) file.length()];</span>
+<span class="fc" id="L124">        FileInputStream fis = new FileInputStream(file);</span>
+<span class="fc" id="L125">        fis.read(bytesArray);</span>
+<span class="fc" id="L126">        fis.close();</span>
+<span class="fc" id="L127">        return Base64.getEncoder().encodeToString(bytesArray);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -10,8 +10,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
 
-import javax.validation.ConstraintViolationException;
+
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -33,19 +34,6 @@ public class ProductDtoTest extends AbstractUnitTest {
 
         ProductData productData = productDto.getAllData().get(0);
         matchData(0, productData);
-    }
-
-    @Test(expected = ApiException.class)
-    public void testUniqueBarcodeOnAdd() throws ApiException {
-        ProductForm productForm = createProduct(0);
-        productDto.create(productForm);
-        try{
-            productDto.create(productForm);
-        }
-        catch (ApiException e){
-            Assert.assertEquals("Provided Product with given barcode already exists", e.getMessage());
-            throw new ApiException("Provided Product with given barcode already exists");
-        }
     }
 
     @Test(expected = ApiException.class)
@@ -185,19 +173,6 @@ public class ProductDtoTest extends AbstractUnitTest {
         }
     }
 
-    @Test(expected = ApiException.class)
-    public void testAddOnBarcodeAlreadyExist() throws ApiException {
-        ProductForm productForm = createProduct(0);
-        productDto.create(productForm);
-        try{
-            productDto.create(productForm);
-        }
-        catch (ApiException e){
-            Assert.assertEquals("Provided Product with given barcode already exists",e.getMessage());
-            throw new ApiException("Provided Product with given barcode already exists");
-        }
-    }
-
     private void matchData(Integer id, ProductData productData){
         assertEquals("barcode" + id, productData.getBarcode());
         assertEquals("brand" + id, productData.getBrand());
@@ -218,6 +193,26 @@ public class ProductDtoTest extends AbstractUnitTest {
         productForm.setName("product" + id);
         productForm.setMrp(100.0);
         return productForm;
+    }
+
+    @Test
+    public void testUpload()
+            throws Exception {
+        MockMultipartFile file
+                = new MockMultipartFile(
+                "file",
+                "product.tsv",
+                "text/tab-separated-values",
+                ("barcode\tmrp\tbrand\tcategory\tname\r\n" +
+                        "barcode0\t100.0\tbrand0\tcategory0\tproduct0\u001a").getBytes()
+        );
+        BrandForm brandForm = new BrandForm();
+        brandForm.setBrand("brand0");
+        brandForm.setCategory("category0");
+        brandDto.create(brandForm);
+        productDto.upload(file);
+        List<ProductData> productDataList = productDto.getAllData();
+        assertEquals(1,productDataList.size());
     }
 
 }

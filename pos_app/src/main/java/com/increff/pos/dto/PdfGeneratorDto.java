@@ -60,10 +60,9 @@ public class PdfGeneratorDto {
         dateTimeFormatter = DateTimeFormatter.ofPattern(TIME_FORMAT);
         String currentTime = currentZonedDateTime.format(dateTimeFormatter);
         InvoiceData invoiceData = getInvoiceDetails(orderPojo, currentDate, currentTime);
-
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String json = ow.writeValueAsString(invoiceData);
-        System.out.println(json);
+//        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+//        String json = ow.writeValueAsString(invoiceData);
+//        System.out.println(json);
         String base64;
         ResponseEntity<String> response;
         try{

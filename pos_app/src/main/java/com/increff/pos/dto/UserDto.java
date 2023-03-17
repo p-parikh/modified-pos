@@ -49,10 +49,6 @@ public class UserDto {
         return userDataList;
     }
 
-    public UserData getById(Integer id) throws ApiException{
-        return UserDtoHelper.convertToUserData(userApi.getById(id));
-    }
-
     public UserData getByEmail(String email) throws ApiException{
         return UserDtoHelper.convertToUserData(userApi.getByEmail(email));
     }

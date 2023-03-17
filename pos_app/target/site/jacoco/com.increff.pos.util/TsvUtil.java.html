@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TsvUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">POS</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.util</a> &gt; <span class="el_source">TsvUtil.java</span></div><h1>TsvUtil.java</h1><pre class="source lang-java linenums">package com.increff.pos.util;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.increff.commons.sheet.TsvToJson;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.*;
+
+@Component
+<span class="fc" id="L13">public class TsvUtil {</span>
+
+    private static TsvToJson tsvParse;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    public &lt;T&gt; List&lt;T&gt; convert(File file, Class&lt;T&gt; clazz) throws Exception {
+<span class="fc" id="L21">        tsvParse = new TsvToJson();</span>
+<span class="fc" id="L22">        List&lt;HashMap&lt;String, Object&gt;&gt; values = tsvParse.tsvToJson(file);</span>
+<span class="fc" id="L23">        List&lt;T&gt; resultSet = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        for(Map&lt;String, Object&gt; value : values){</span>
+<span class="fc" id="L25">            resultSet.add(objectMapper.convertValue(value, clazz));</span>
+<span class="fc" id="L26">        }</span>
+<span class="fc" id="L27">        return resultSet;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

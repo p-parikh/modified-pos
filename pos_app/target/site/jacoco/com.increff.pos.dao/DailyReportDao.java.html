@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DailyReportDao.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">POS</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.dao</a> &gt; <span class="el_source">DailyReportDao.java</span></div><h1>DailyReportDao.java</h1><pre class="source lang-java linenums">package com.increff.pos.dao;
+
+import com.increff.pos.pojo.DailyReportPojo;
+import org.springframework.stereotype.Repository;
+
+import javax.persistence.TypedQuery;
+import java.time.ZonedDateTime;
+import java.util.List;
+
+@Repository
+<span class="fc" id="L11">public class DailyReportDao extends AbstractDao{</span>
+
+    private static final String SELECT_ALL = &quot;select dr from Dailyreport dr&quot;;
+    private static final String SELECT_FILTERED = &quot;select dr from Dailyreport dr where reportDate between : startDateTime and : endDateTime&quot;;
+
+    public List&lt;DailyReportPojo&gt; viewAll(){
+<span class="fc" id="L17">        TypedQuery&lt;DailyReportPojo&gt; query = em().createQuery(SELECT_ALL, DailyReportPojo.class);</span>
+<span class="fc" id="L18">        return query.getResultList();</span>
+    }
+
+    public void insert(DailyReportPojo dailyReportPojo){
+<span class="fc" id="L22">        em().persist(dailyReportPojo);</span>
+<span class="fc" id="L23">    }</span>
+
+    public List&lt;DailyReportPojo&gt; selectFilteredReport(ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
+<span class="fc" id="L26">        TypedQuery&lt;DailyReportPojo&gt; query = em().createQuery(SELECT_FILTERED, DailyReportPojo.class);</span>
+<span class="fc" id="L27">        query.setParameter(&quot;startDateTime&quot;, startDateTime);</span>
+<span class="fc" id="L28">        query.setParameter(&quot;endDateTime&quot;, endDateTime);</span>
+<span class="fc" id="L29">        List&lt;DailyReportPojo&gt; dailyReportPojoList = query.getResultList();</span>
+<span class="fc" id="L30">        return dailyReportPojoList;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

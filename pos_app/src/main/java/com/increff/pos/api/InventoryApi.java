@@ -37,8 +37,4 @@ public class InventoryApi {
     public void update(Integer productId, InventoryPojo inventoryPojo) throws ApiException{
         inventoryDao.update(productId, inventoryPojo);
     }
-
-    public List<Integer> getAllId(){
-        return  inventoryDao.getAllProductId();
-    }
 }

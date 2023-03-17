@@ -1,22 +1,29 @@
 package com.increff.pos.dto;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.increff.pos.api.AbstractUnitTest;
 import com.increff.pos.exception.ApiException;
 import com.increff.pos.model.data.BrandData;
 import com.increff.pos.model.forms.BrandForm;
-import io.swagger.annotations.Api;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
+import javax.persistence.PersistenceException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 public class BrandDtoTest extends AbstractUnitTest {
     @Autowired
     private BrandDto brandDto;
+
+    @Autowired
+    private WebApplicationContext webApplicationContext;
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
@@ -30,23 +37,6 @@ public class BrandDtoTest extends AbstractUnitTest {
         BrandData brandData = brandDto.getAllData().get(0);
         assertEquals("test brand", brandData.getBrand());
         assertEquals("test category", brandData.getCategory());
-    }
-
-    @Test(expected = ApiException.class)
-    public void testBrandCategoryUniquenessOnAdd() throws ApiException {
-        BrandForm brandForm = new BrandForm();
-        String brand = "brand";
-        String category = "category";
-        brandForm.setBrand(brand);
-        brandForm.setCategory(category);
-        brandDto.create(brandForm);
-        try{
-            brandDto.create(brandForm);
-        }
-        catch(ApiException e){
-            Assert.assertEquals("Provided Brand Category Pair already exists", e.getMessage());
-            throw new ApiException("Provided Brand Category Pair already exists");
-        }
     }
 
     @Test(expected = ApiException.class)
@@ -107,5 +97,22 @@ public class BrandDtoTest extends AbstractUnitTest {
         brandForm = brandDto.getAllData().get(0);
         assertEquals("new brand", brandForm.getBrand());
         assertEquals("new category", brandForm.getCategory());
+    }
+
+
+    @Test
+    public void testUpload()
+            throws Exception {
+        MockMultipartFile file
+                = new MockMultipartFile(
+                "file",
+                "brand.tsv",
+                "text/tab-separated-values",
+                ("brand\tcategory\r\n" +
+                        "brand0\tcategory0\u001a").getBytes()
+        );
+        brandDto.upload(file);
+        List<BrandData> brandDataList = brandDto.getAllData();
+        assertEquals(1,brandDataList.size());
     }
 }

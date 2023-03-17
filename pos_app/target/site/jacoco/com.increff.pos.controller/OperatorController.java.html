@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OperatorController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">POS</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.controller</a> &gt; <span class="el_source">OperatorController.java</span></div><h1>OperatorController.java</h1><pre class="source lang-java linenums">package com.increff.pos.controller;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.increff.pos.dto.*;
+import com.increff.pos.exception.ApiException;
+import com.increff.pos.model.data.BrandData;
+import com.increff.pos.model.data.InventoryData;
+import com.increff.pos.model.data.OrderItemData;
+import com.increff.pos.model.data.ProductData;
+import com.increff.pos.model.forms.OrderItemForm;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
+
+@Api
+@RestController
+@RequestMapping(path = &quot;/api/operator&quot;)
+<span class="fc" id="L22">public class OperatorController {</span>
+
+    @Autowired
+    private BrandDto brandDto;
+
+    @Autowired
+    private ProductDto productDto;
+
+    @Autowired
+    private InventoryDto inventoryDto;
+
+    @Autowired
+    private OrderItemDto orderItemDto;
+
+    @Autowired
+    private PdfGeneratorDto pdfGeneratorDto;
+
+    @ApiOperation(value=&quot;Get list of all brands&quot;)
+    @RequestMapping(path = &quot;/brand/viewAll&quot;, method = RequestMethod.GET)
+    public List&lt;BrandData&gt; getAllBrands(){
+<span class="nc" id="L42">        return brandDto.getAllData();</span>
+    }
+
+    @ApiOperation(value=&quot;Get list of all products&quot;)
+    @RequestMapping(path = &quot;/product/viewAll&quot;, method = RequestMethod.GET)
+    public List&lt;ProductData&gt; getAllProducts() throws ApiException {
+<span class="nc" id="L48">        return productDto.getAllData();</span>
+    }
+
+    @ApiOperation(value = &quot;Get list of all inventory&quot;)
+    @RequestMapping(path = &quot;/inventory/viewAll&quot;, method = RequestMethod.GET)
+    public List&lt;InventoryData&gt; getAllInventory() throws ApiException {
+<span class="nc" id="L54">        return inventoryDto.getAllData();</span>
+    }
+
+    @ApiOperation(value=&quot;create order&quot;)
+    @RequestMapping(path=&quot;/order/create&quot;, method = RequestMethod.POST)
+    public Integer createOrder(@RequestBody List&lt;OrderItemForm&gt; orderItemFormList) throws ApiException{
+<span class="nc" id="L60">        return orderItemDto.create(orderItemFormList);</span>
+    }
+
+    @ApiOperation(value = &quot;Update order&quot;)
+    @RequestMapping(path= &quot;/order/edit/{id}&quot;, method = RequestMethod.PUT)
+    public Integer updateOrder(@PathVariable Integer id, @RequestBody List&lt;OrderItemForm&gt; orderItemFormList) throws ApiException{
+<span class="nc" id="L66">        return orderItemDto.update(id, orderItemFormList);</span>
+    }
+
+    @ApiOperation(value = &quot;Get orderItem by order id&quot;)
+    @RequestMapping(path = &quot;/order/viewOrder/{orderId}&quot;, method = RequestMethod.GET)
+    public List&lt;OrderItemData&gt; getOrderByOrderId(@PathVariable Integer orderId) throws ApiException{
+<span class="nc" id="L72">        return orderItemDto.getByOrderId(orderId);</span>
+    }
+
+    @ApiOperation(value = &quot;Get list of all orderItem&quot;)
+    @RequestMapping(path = &quot;/order/viewAll&quot;, method = RequestMethod.GET)
+    public List&lt;OrderItemData&gt; getAll() throws ApiException {
+<span class="nc" id="L78">        return orderItemDto.getAllData();</span>
+    }
+
+    @ApiOperation(value = &quot;generate invoice&quot;)
+    @RequestMapping(path = &quot;/order/generate-invoice/{orderId}&quot;, method = RequestMethod.GET)
+    public void generateInvoice(@PathVariable Integer orderId) throws ApiException, JsonProcessingException {
+<span class="nc" id="L84">        pdfGeneratorDto.generatePdf(orderId);</span>
+<span class="nc" id="L85">    }</span>
+
+    @ApiOperation(value = &quot;download invoice pdf&quot;)
+    @RequestMapping(path = &quot;/order/download-invoice/{orderId}&quot;, method = RequestMethod.GET)
+    public String downloadInvoice(@PathVariable Integer orderId) throws IOException {
+<span class="nc" id="L90">        return pdfGeneratorDto.downloadInvoice(orderId);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -57,6 +57,19 @@ public class BrandApiTest extends AbstractUnitTest{
         assertEquals(brandId, brandPojo_db.getId());
     }
 
+    @Test(expected = ApiException.class)
+    public void testGetByWrongId() throws ApiException{
+        BrandPojo brandPojo = createBrandPojo(0);
+        Integer brandId = brandApi.create(brandPojo);
+        try{
+            brandApi.getById(brandId+1);
+        }
+        catch (ApiException e){
+            assertEquals("Brand does not exists with given Id", e.getMessage());
+            throw new ApiException("Brand does not exists with given Id");
+        }
+    }
+
     private void matchPojo(Integer id, BrandPojo brandPojo){
         assertEquals("brand" + id, brandPojo.getBrand());
         assertEquals("category" + id, brandPojo.getCategory());

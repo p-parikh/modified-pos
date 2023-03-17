@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DailyReportDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">POS</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.dto</a> &gt; <span class="el_source">DailyReportDto.java</span></div><h1>DailyReportDto.java</h1><pre class="source lang-java linenums">package com.increff.pos.dto;
+
+import com.increff.pos.api.DailyReportApi;
+import com.increff.pos.api.OrderApi;
+import com.increff.pos.api.OrderItemApi;
+import com.increff.pos.dto.helper.DailyReportDtoHelper;
+import com.increff.pos.exception.ApiException;
+import com.increff.pos.model.data.DailyReportData;
+import com.increff.pos.model.forms.DailyReportForm;
+import com.increff.pos.pojo.DailyReportPojo;
+import com.increff.pos.pojo.OrderItemPojo;
+import com.increff.pos.pojo.OrderPojo;
+import com.increff.pos.util.ValidationUtil;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.sql.Timestamp;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.increff.pos.api.DailyReportApi.END_TIME;
+import static com.increff.pos.api.DailyReportApi.START_TIME;
+
+@Component
+<span class="fc" id="L30">public class DailyReportDto {</span>
+    private static final String SCHEDULER_TIME = &quot;0 */1 * ? * *&quot;;
+<span class="fc" id="L32">    private static final Logger logger = Logger.getLogger(DailyReportDto.class);</span>
+    public static final String DATE_FORMAT_YMD = &quot;yyyy-MM-dd&quot;;
+
+    @Autowired
+    private DailyReportApi dailyReportApi;
+
+    @Autowired
+    private OrderApi orderApi;
+
+    @Autowired
+    private OrderItemApi orderItemApi;
+
+    public List&lt;DailyReportData&gt; getAll() throws ApiException {
+<span class="fc" id="L45">        List&lt;DailyReportData&gt; dailyReportDataList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L46">        List&lt;DailyReportPojo&gt; dailyReportPojoList = dailyReportApi.getAll();</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        for(DailyReportPojo dailyReportPojo : dailyReportPojoList){</span>
+<span class="fc" id="L48">            DailyReportData dailyReportData = DailyReportDtoHelper.convertDailyReportPojoToData(dailyReportPojo);</span>
+<span class="fc" id="L49">            dailyReportDataList.add(dailyReportData);</span>
+<span class="fc" id="L50">        }</span>
+<span class="fc" id="L51">        return dailyReportDataList;</span>
+    }
+
+    public List&lt;DailyReportData&gt; getFilteredReport(DailyReportForm dailyReportForm) throws ApiException {
+<span class="fc" id="L55">        ValidationUtil.checkValid(dailyReportForm);</span>
+<span class="fc" id="L56">        DailyReportDtoHelper.normalise(dailyReportForm);</span>
+<span class="fc" id="L57">        ValidationUtil.validateDates(dailyReportForm.getStartDate(), dailyReportForm.getEndDate());</span>
+<span class="fc" id="L58">        List&lt;DailyReportData&gt; dailyReportDataList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L59">        List&lt;DailyReportPojo&gt; dailyReportPojoList = dailyReportApi.getFilteredReport(dailyReportForm);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        for(DailyReportPojo dailyReportPojo : dailyReportPojoList){</span>
+<span class="fc" id="L61">            dailyReportDataList.add(DailyReportDtoHelper.convertDailyReportPojoToData(dailyReportPojo));</span>
+<span class="fc" id="L62">        }</span>
+<span class="fc" id="L63">        return dailyReportDataList;</span>
+    }
+
+
+    @Scheduled(cron = SCHEDULER_TIME)
+    public void dailyReportScheduled() {
+        //currentDateTime gets the last day date for which daily report has to be generated
+<span class="fc" id="L70">        System.out.println(&quot;scheduled call triggered&quot;);</span>
+<span class="fc" id="L71">        ZonedDateTime currentDateTime = ZonedDateTime.now();</span>
+<span class="fc" id="L72">        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT_YMD);</span>
+<span class="fc" id="L73">        String lastDayDate = currentDateTime.format(dateTimeFormatter);</span>
+<span class="fc" id="L74">        String startDate = lastDayDate + START_TIME;</span>
+<span class="fc" id="L75">        String endDate = lastDayDate + END_TIME;</span>
+<span class="fc" id="L76">        ZonedDateTime zonedStartDateTime = ZonedDateTime.parse(startDate);</span>
+<span class="fc" id="L77">        ZonedDateTime zonedEndDateTime = ZonedDateTime.parse(endDate);</span>
+<span class="fc" id="L78">        generateDailyReport(zonedStartDateTime, zonedEndDateTime);</span>
+
+<span class="fc" id="L80">    }</span>
+
+    public void generateDailyReport(ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
+<span class="fc" id="L83">        List&lt;OrderPojo&gt; orderPojoList = orderApi.getOrderBetweenStartEndDate(startDateTime, endDateTime);</span>
+<span class="fc" id="L84">        DailyReportPojo dailyReportPojo = new DailyReportPojo();</span>
+<span class="fc" id="L85">        dailyReportPojo.setReportDate(startDateTime);</span>
+<span class="fc" id="L86">        Integer totalOrder = 0;</span>
+<span class="fc" id="L87">        Integer totalItem = 0;</span>
+<span class="fc" id="L88">        double totalRevenue = 0.0;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        for (OrderPojo orderPojo : orderPojoList) {</span>
+<span class="fc" id="L90">            List&lt;OrderItemPojo&gt; orderItemPojoList = orderItemApi.selectByOrderId(orderPojo.getId());</span>
+<span class="fc" id="L91">            totalOrder++;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">            for (OrderItemPojo orderItemPojo : orderItemPojoList) {</span>
+<span class="fc" id="L93">                totalItem += orderItemPojo.getQuantity();</span>
+<span class="fc" id="L94">                totalRevenue += (orderItemPojo.getSellingPrice() * orderItemPojo.getQuantity());</span>
+<span class="fc" id="L95">            }</span>
+<span class="fc" id="L96">        }</span>
+<span class="fc" id="L97">        dailyReportPojo.setTotalOrders(totalOrder);</span>
+<span class="fc" id="L98">        dailyReportPojo.setTotalItems(totalItem);</span>
+<span class="fc" id="L99">        dailyReportPojo.setTotalRevenue(totalRevenue);</span>
+<span class="fc" id="L100">        dailyReportApi.add(dailyReportPojo);</span>
+<span class="fc" id="L101">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

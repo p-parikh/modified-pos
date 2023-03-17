@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderItemDao.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">POS</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.dao</a> &gt; <span class="el_source">OrderItemDao.java</span></div><h1>OrderItemDao.java</h1><pre class="source lang-java linenums">package com.increff.pos.dao;
+
+import com.increff.pos.exception.ApiException;
+import com.increff.pos.pojo.OrderItemPojo;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.TypedQuery;
+import java.util.List;
+
+@Repository
+@Transactional
+<span class="fc" id="L13">public class OrderItemDao extends AbstractDao{</span>
+
+    private static final String SELECT_ALL = &quot;select oi from Orderitem oi&quot;;
+
+    private static final String SELECT_BY_ID = &quot;select oi from Orderitem oi where id=:id&quot;;
+
+    private static final String SELECT_BY_ORDER_AND_PRODUCT_ID = &quot;select oi from Orderitem oi where orderId=:orderId and productId=:productId&quot;;
+
+    private static final String SELECT_BY_ORDER_ID = &quot;select oi from Orderitem oi where orderId=:orderId&quot;;
+
+    private static final String DELETE_BY_ID = &quot;delete from Orderitem where id=:id&quot;;
+    public List&lt;OrderItemPojo&gt; viewAll(){
+<span class="fc" id="L25">        TypedQuery&lt;OrderItemPojo&gt; query = em().createQuery(SELECT_ALL, OrderItemPojo.class);</span>
+<span class="fc" id="L26">        return query.getResultList();</span>
+    }
+
+    public OrderItemPojo viewById(Integer id){
+<span class="fc" id="L30">        TypedQuery&lt;OrderItemPojo&gt; query = em().createQuery(SELECT_BY_ID, OrderItemPojo.class);</span>
+<span class="fc" id="L31">        query.setParameter(&quot;id&quot;, id);</span>
+<span class="fc" id="L32">        return getSingleRow(query);</span>
+    }
+
+    public void insert(OrderItemPojo orderItemPojo){
+<span class="fc" id="L36">        em().persist(orderItemPojo);</span>
+<span class="fc" id="L37">    }</span>
+
+    public void update(Integer id, OrderItemPojo orderItemPojo) throws ApiException{
+<span class="nc" id="L40">        OrderItemPojo orderItemPojo_db = viewById(id);</span>
+
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if(orderItemPojo_db == null){</span>
+<span class="nc" id="L43">            throw new ApiException(&quot;Order does not exists with given id&quot;);</span>
+        }
+<span class="nc" id="L45">        orderItemPojo_db.setProductId(orderItemPojo.getProductId());</span>
+<span class="nc" id="L46">        orderItemPojo_db.setQuantity(orderItemPojo.getQuantity());</span>
+<span class="nc" id="L47">        orderItemPojo_db.setSellingPrice(orderItemPojo.getSellingPrice());</span>
+<span class="nc" id="L48">    }</span>
+
+    public OrderItemPojo selectWithOrderAndProductId(Integer orderId, Integer productId){
+<span class="nc" id="L51">        TypedQuery&lt;OrderItemPojo&gt; query = em().createQuery(SELECT_BY_ORDER_AND_PRODUCT_ID, OrderItemPojo.class);</span>
+<span class="nc" id="L52">        query.setParameter(&quot;orderId&quot;, orderId);</span>
+<span class="nc" id="L53">        query.setParameter(&quot;productId&quot;, productId);</span>
+<span class="nc" id="L54">        return getSingleRow(query);</span>
+    }
+
+    public List&lt;OrderItemPojo&gt; selectWithOrderId(Integer orderId){
+<span class="fc" id="L58">        TypedQuery&lt;OrderItemPojo&gt; query = em().createQuery(SELECT_BY_ORDER_ID, OrderItemPojo.class);</span>
+<span class="fc" id="L59">        query.setParameter(&quot;orderId&quot;, orderId);</span>
+<span class="fc" id="L60">        return query.getResultList();</span>
+    }
+
+    public void delete(Integer id) throws ApiException{
+<span class="fc" id="L64">        OrderItemPojo orderItemPojo = viewById(id);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if(orderItemPojo == null){</span>
+<span class="fc" id="L66">            throw new ApiException(&quot;Order Item does not exists with provided id&quot;);</span>
+        }
+<span class="fc" id="L68">        em().remove(orderItemPojo);</span>
+<span class="fc" id="L69">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
