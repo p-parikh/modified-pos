@@ -52,8 +52,9 @@ public class ProductDto {
         if(brandPojo == null){
             throw new ApiException("Product with provided brand and category does not exists");
         }
+        productForm = ProductDtoHelper.normalise(productForm);
         ProductPojo productPojo = ProductDtoHelper.convertToProductPojo(productForm, brandPojo.getId());
-        productApi.update(id, ProductDtoHelper.normalise(productPojo));
+        productApi.update(id, productPojo);
     }
 
     public Integer create(ProductForm productForm) throws ApiException{
@@ -63,22 +64,25 @@ public class ProductDto {
         if(brandPojo == null){
             throw new ApiException("Product with provided brand and category does not exists");
         }
+        productForm = ProductDtoHelper.normalise(productForm);
         ProductPojo productPojo = ProductDtoHelper.convertToProductPojo(productForm, brandPojo.getId());
-        productApi.create(ProductDtoHelper.normalise(productPojo));
+        productApi.create(productPojo);
         return productPojo.getId();
     }
 
     public void upload(MultipartFile productTsv) throws Exception {
-        //TODO mock multipart spring package for test
         File convertedTsv = FileConversionUtil.convert(productTsv);
         List<ProductForm> uploadList = tsvUtil.convert(convertedTsv, ProductForm.class);
-        ValidationUtil.checkValid(uploadList);
+        ValidationUtil.checkValidMultiple(uploadList);
         validateBrandCategory(uploadList);
+        List<ProductPojo> productPojoList = new ArrayList<>();
         for(ProductForm productForm : uploadList) {
+            productForm = ProductDtoHelper.normalise(productForm);
             BrandPojo brandPojo = brandApi.selectWithBrandAndCategory(productForm.getBrand(), productForm.getCategory());
             ProductPojo productPojo = ProductDtoHelper.convertToProductPojo(productForm, brandPojo.getId());
-            productApi.create(productPojo);
+            productPojoList.add(productPojo);
         }
+        productApi.createMultiple(productPojoList);
     }
 
     private void validateBrandCategory(List<ProductForm> uploadList) throws ApiException{

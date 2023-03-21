@@ -22,10 +22,15 @@ public class DailyReportApi {
     private DailyReportDao dailyReportDao;
 
     public void add(DailyReportPojo dailyReportPojo) {
-        dailyReportDao.insert(dailyReportPojo);
+        DailyReportPojo dailyReportPojo_db = dailyReportDao.getByDate(dailyReportPojo.getReportDate());
+        if(dailyReportPojo_db == null)
+            dailyReportDao.insert(dailyReportPojo);
+        else{
+            dailyReportDao.update(dailyReportPojo.getReportDate(), dailyReportPojo);
+        }
     }
 
-    public List<DailyReportPojo> getAll() throws ApiException {
+    public List<DailyReportPojo> getAll() {
         List<DailyReportPojo> dailyReportPojoList = dailyReportDao.viewAll();
         dailyReportPojoList.sort((dailyReportPojo1, dailyReportPojo2) -> dailyReportPojo2.getReportDate().compareTo(dailyReportPojo1.getReportDate()));
         return dailyReportPojoList;

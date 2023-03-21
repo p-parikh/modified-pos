@@ -2576,3 +2576,23 @@ Caused by: java.lang.ClassNotFoundException: com.increff.pos.dto.ReportDto
 	at org.eclipse.jetty.webapp.WebAppClassLoader.loadClass(WebAppClassLoader.java:565)
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:352)
 	... 40 more
+2023-03-20 11:11:52 WARN  SqlExceptionHelper:137 - SQL Error: 1062, SQLState: 23000
+2023-03-20 11:11:52 ERROR SqlExceptionHelper:142 - Duplicate entry 'lkjh234' for key 'UK_a8slcwuk6kcnegxoe8hbrs9on'
+2023-03-20 11:17:09 INFO  SupervisorController:56 - received file
+2023-03-20 11:17:09 INFO  SupervisorController:57 - org.springframework.web.multipart.commons.CommonsMultipartFile@4a2545ef
+2023-03-20 11:17:56 INFO  SupervisorController:56 - received file
+2023-03-20 11:17:56 INFO  SupervisorController:57 - org.springframework.web.multipart.commons.CommonsMultipartFile@77f49b48
+2023-03-20 12:18:50 INFO  SupervisorController:56 - received file
+2023-03-20 12:18:50 INFO  SupervisorController:57 - org.springframework.web.multipart.commons.CommonsMultipartFile@2066bc04
+2023-03-20 12:18:50 WARN  SqlExceptionHelper:137 - SQL Error: 1062, SQLState: 23000
+2023-03-20 12:18:50 ERROR SqlExceptionHelper:142 - Duplicate entry 'priyam-parikh' for key 'brand_category_uk'
+2023-03-20 12:25:14 WARN  SqlExceptionHelper:137 - SQL Error: 1062, SQLState: 23000
+2023-03-20 12:25:14 ERROR SqlExceptionHelper:142 - Duplicate entry 'priyam-parikh' for key 'brand_category_uk'
+2023-03-20 12:35:45 WARN  SqlExceptionHelper:137 - SQL Error: 1062, SQLState: 23000
+2023-03-20 12:35:45 ERROR SqlExceptionHelper:142 - Duplicate entry 'priyam-parikh' for key 'brand_category_uk'
+2023-03-20 12:36:53 WARN  SqlExceptionHelper:137 - SQL Error: 1062, SQLState: 23000
+2023-03-20 12:36:53 ERROR SqlExceptionHelper:142 - Duplicate entry 'priyam-parikh' for key 'brand_category_uk'
+2023-03-20 12:38:06 WARN  SqlExceptionHelper:137 - SQL Error: 1062, SQLState: 23000
+2023-03-20 12:38:06 ERROR SqlExceptionHelper:142 - Duplicate entry 'priyam-parikh' for key 'brand_category_uk'
+2023-03-20 12:41:41 WARN  SqlExceptionHelper:137 - SQL Error: 1062, SQLState: 23000
+2023-03-20 12:41:41 ERROR SqlExceptionHelper:142 - Duplicate entry 'priyam-parikh' for key 'brand_category_uk'

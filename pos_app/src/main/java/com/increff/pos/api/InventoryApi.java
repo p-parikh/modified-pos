@@ -37,4 +37,16 @@ public class InventoryApi {
     public void update(Integer productId, InventoryPojo inventoryPojo) throws ApiException{
         inventoryDao.update(productId, inventoryPojo);
     }
+
+    public void createMultiple(List<InventoryPojo> inventoryPojoList) throws ApiException {
+        int count = 0;
+        for(InventoryPojo inventoryPojo : inventoryPojoList){
+            count++;
+            InventoryPojo inventoryPojo_db = getById(inventoryPojo.getProductId());
+            if(inventoryPojo_db == null)
+                inventoryDao.insert(inventoryPojo);
+            else
+                throw new ApiException("Inventory for provided barcode already exists. Error on line number: " +count);
+        }
+    }
 }

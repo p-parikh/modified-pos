@@ -26,9 +26,9 @@ public class BrandDtoHelper {
         return brandData;
     }
 
-    public static BrandPojo normalise(BrandPojo brandPojo) {
-        brandPojo.setBrand(brandPojo.getBrand().trim().toLowerCase());
-        brandPojo.setCategory(brandPojo.getCategory().trim().toLowerCase());
-        return brandPojo;
+    public static BrandForm normalise(BrandForm brandForm) {
+        brandForm.setBrand(brandForm.getBrand().trim().toLowerCase());
+        brandForm.setCategory(brandForm.getCategory().trim().toLowerCase());
+        return brandForm;
     }
 }

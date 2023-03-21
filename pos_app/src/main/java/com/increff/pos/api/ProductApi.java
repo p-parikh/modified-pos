@@ -42,4 +42,16 @@ public class ProductApi {
     public ProductPojo selectWithBarcode(String barcode){
         return productDao.selectWithBarCode(barcode);
     }
+
+    public void createMultiple(List<ProductPojo> productPojoList) throws ApiException {
+        int count = 1;
+        for(ProductPojo productPojo : productPojoList){
+            count++;
+            ProductPojo productPojo_db = selectWithBarcode(productPojo.getBarcode());
+            if(productPojo_db == null)
+                productDao.insert(productPojo);
+            else
+                throw new ApiException("Provided barcode already exists. Error on line number: " +count);
+        }
+    }
 }

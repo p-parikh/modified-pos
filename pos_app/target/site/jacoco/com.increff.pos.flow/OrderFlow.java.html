@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderFlow.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">POS</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.flow</a> &gt; <span class="el_source">OrderFlow.java</span></div><h1>OrderFlow.java</h1><pre class="source lang-java linenums">package com.increff.pos.flow;
+
+import com.increff.pos.api.InventoryApi;
+import com.increff.pos.api.OrderApi;
+import com.increff.pos.api.OrderItemApi;
+import com.increff.pos.api.ProductApi;
+import com.increff.pos.dto.helper.OrderItemDtoHelper;
+import com.increff.pos.exception.ApiException;
+import com.increff.pos.model.forms.OrderItemForm;
+import com.increff.pos.pojo.InventoryPojo;
+import com.increff.pos.pojo.OrderItemPojo;
+import com.increff.pos.pojo.OrderPojo;
+import com.increff.pos.pojo.ProductPojo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+
+@Service
+@Transactional(rollbackFor = Exception.class)
+<span class="fc" id="L24">public class OrderFlow {</span>
+    @Autowired
+    private ProductApi productApi;
+
+    @Autowired
+    private InventoryApi inventoryApi;
+
+    @Autowired
+    private OrderApi orderApi;
+
+    @Autowired
+    private OrderItemApi orderItemApi;
+
+    public Integer create(List&lt;OrderItemForm&gt; orderItemFormList) throws ApiException{
+<span class="fc" id="L38">        ZonedDateTime datetime = ZonedDateTime.now(ZoneId.systemDefault());</span>
+<span class="fc" id="L39">        OrderPojo orderPojo = new OrderPojo();</span>
+<span class="fc" id="L40">        orderPojo.setDatetime(datetime);</span>
+<span class="fc" id="L41">        orderApi.create(orderPojo);</span>
+
+<span class="fc" id="L43">        OrderPojo orderPojo_db = orderApi.getByDatetime(datetime);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        for(OrderItemForm orderItemForm : orderItemFormList){</span>
+<span class="fc" id="L45">            ProductPojo productPojo = productApi.selectWithBarcode(orderItemForm.getBarcode());</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">            if (productPojo == null) {</span>
+<span class="fc" id="L47">                throw new ApiException(&quot;Product with provided barcode does not exists&quot;);</span>
+            }
+<span class="fc" id="L49">            InventoryPojo inventoryPojo = inventoryApi.getById(productPojo.getId());</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">            if(inventoryPojo == null){</span>
+<span class="nc" id="L51">                throw new ApiException(&quot;Inventory for provided product does not exists&quot;);</span>
+            }
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">            if (inventoryPojo.getQty() &lt; orderItemForm.getQuantity()) {</span>
+<span class="nc" id="L54">                throw new ApiException(&quot;Demanded quantity of required product can not be fulfilled&quot;);</span>
+            }
+<span class="fc" id="L56">            inventoryPojo.setQty(inventoryPojo.getQty() - orderItemForm.getQuantity());</span>
+<span class="fc" id="L57">            inventoryApi.update(productPojo.getId(), inventoryPojo);</span>
+<span class="fc" id="L58">            orderItemApi.create(OrderItemDtoHelper.convertToOrderItemPojo(orderItemForm, productPojo.getId(), orderPojo_db.getId()));</span>
+<span class="fc" id="L59">        }</span>
+<span class="fc" id="L60">        return orderPojo_db.getId();</span>
+    }
+    public Integer update(Integer id, List&lt;OrderItemForm&gt; orderItemFormList) throws ApiException{
+<span class="fc" id="L63">        List&lt;OrderItemPojo&gt; orderItemPojo_db = orderItemApi.selectByOrderId(id);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        for(OrderItemPojo orderItemPojo : orderItemPojo_db){</span>
+<span class="fc" id="L65">            InventoryPojo inventoryPojo = inventoryApi.getById(orderItemPojo.getProductId());</span>
+<span class="fc" id="L66">            inventoryPojo.setQty(orderItemPojo.getQuantity() + inventoryPojo.getQty());</span>
+<span class="fc" id="L67">            inventoryApi.update(orderItemPojo.getProductId(), inventoryPojo);</span>
+<span class="fc" id="L68">            orderItemApi.delete(orderItemPojo.getId());</span>
+<span class="fc" id="L69">        }</span>
+<span class="fc" id="L70">        orderApi.delete(id);</span>
+<span class="fc" id="L71">        return create(orderItemFormList);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

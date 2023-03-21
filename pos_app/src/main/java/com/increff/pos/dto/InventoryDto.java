@@ -70,13 +70,15 @@ public class InventoryDto {
     public void upload(MultipartFile inventoryTsv) throws Exception{
         File convertedTsv = FileConversionUtil.convert(inventoryTsv);
         List<InventoryForm> uploadList = tsvUtil.convert(convertedTsv, InventoryForm.class);
-        ValidationUtil.checkValid(uploadList);
+        ValidationUtil.checkValidMultiple(uploadList);
         validateProduct(uploadList);
+        List<InventoryPojo> inventoryPojoList = new ArrayList<>();
         for(InventoryForm inventoryForm : uploadList){
             ProductPojo productPojo = productApi.selectWithBarcode(inventoryForm.getBarcode());
             InventoryPojo inventoryPojo = InventoryDtoHelper.convertToInventoryPojo(inventoryForm, productPojo.getId());
-            inventoryApi.create(inventoryPojo);
+            inventoryPojoList.add(inventoryPojo);
         }
+        inventoryApi.createMultiple(inventoryPojoList);
     }
 
     private void validateProduct(List<InventoryForm> uploadList) throws ApiException{

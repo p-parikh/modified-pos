@@ -99,5 +99,4 @@ public class DailyReportDto {
         dailyReportPojo.setTotalRevenue(totalRevenue);
         dailyReportApi.add(dailyReportPojo);
     }
-
 }

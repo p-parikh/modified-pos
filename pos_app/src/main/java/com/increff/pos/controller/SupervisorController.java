@@ -52,9 +52,6 @@ public class SupervisorController {
     @ApiOperation(value="Upload Brand")
     @RequestMapping(path= "/brand/upload", method = RequestMethod.POST)
     public void uploadBrand(@RequestBody MultipartFile file) throws Exception {
-        System.out.println("Inside upload function");
-        log.info("received file");
-        log.info(file);
         brandDto.upload(file);
     }
 

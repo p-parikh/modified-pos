@@ -68,7 +68,6 @@ public class ReportDto {
     }
 
     public void getBrandReportData(HttpServletResponse httpServletResponse) throws Exception{
-        //TODO set in httpservletresponse -done
         List<String> resultSet = new ArrayList<>();
 
         List<BrandPojo> data = brandApi.getAllEntries();

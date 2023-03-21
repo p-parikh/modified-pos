@@ -17,7 +17,7 @@ public class OrderItemForm {
     private String barcode;
 
     @NotNull
-    @Min(value = 0)
+    @Min(value = 1)
     private Integer quantity;
 
     @NotNull

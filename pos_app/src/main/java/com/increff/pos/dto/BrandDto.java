@@ -39,25 +39,30 @@ public class BrandDto {
 
     public void update(Integer id, BrandForm brandForm) throws ApiException {
         ValidationUtil.checkValid(brandForm);
+        brandForm = BrandDtoHelper.normalise(brandForm);
         BrandPojo brandPojo = BrandDtoHelper.convertToBrandPojo(brandForm);
         brandPojo.setId(id);
-        brandApi.update(id, BrandDtoHelper.normalise(brandPojo));
+        brandApi.update(id, brandPojo);
     }
 
     public Integer create(BrandForm brandForm) throws ApiException {
         ValidationUtil.checkValid(brandForm);
+        brandForm = BrandDtoHelper.normalise(brandForm);
         BrandPojo brandPojo = BrandDtoHelper.convertToBrandPojo(brandForm);
-        brandApi.create(BrandDtoHelper.normalise(brandPojo));
+        brandApi.create(brandPojo);
         return brandPojo.getId();
     }
 
     public void upload(MultipartFile brandTsv) throws Exception {
-        File convertedTsv = FileConversionUtil.convert(brandTsv); // multipart file to file conversion
-        List<BrandForm> uploadList = tsvUtil.convert(convertedTsv,BrandForm.class); // converting file into list of class objects
-        ValidationUtil.checkValid(uploadList);
+        File convertedTsv = FileConversionUtil.convert(brandTsv);
+        List<BrandForm> uploadList = tsvUtil.convert(convertedTsv,BrandForm.class);
+        ValidationUtil.checkValidMultiple(uploadList);
+        List<BrandPojo> brandPojoList = new ArrayList<>();
         for(BrandForm brandForm : uploadList){
+            brandForm = BrandDtoHelper.normalise(brandForm);
             BrandPojo brandPojo = BrandDtoHelper.convertToBrandPojo(brandForm);
-            brandApi.create(BrandDtoHelper.normalise(brandPojo));
+            brandPojoList.add(brandPojo);
         }
+        brandApi.createMultiple(brandPojoList);
     }
 }

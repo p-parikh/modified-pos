@@ -35,10 +35,10 @@ public class ProductDtoHelper {
         return productData;
     }
 
-    public static ProductPojo normalise(ProductPojo productPojo){
-        productPojo.setBarcode(productPojo.getBarcode().trim().toLowerCase());
-        productPojo.setName(productPojo.getName().trim().toLowerCase());
-        return productPojo;
+    public static ProductForm normalise(ProductForm productForm){
+        productForm.setBarcode(productForm.getBarcode().trim().toLowerCase());
+        productForm.setName(productForm.getName().trim().toLowerCase());
+        return productForm;
     }
 
 }

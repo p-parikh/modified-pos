@@ -43,4 +43,16 @@ public class BrandApi {
         return brandRepo.selectWithBrandAndCategory(brand, category);
     }
 
+    public void createMultiple(List<BrandPojo> brandPojoList) throws ApiException {
+        int count = 1;
+        for(BrandPojo brandPojo : brandPojoList){
+            count++;
+            BrandPojo brandPojo_db = selectWithBrandAndCategory(brandPojo.getBrand(), brandPojo.getCategory());
+            if(brandPojo_db == null)
+                brandRepo.insert(brandPojo);
+            else
+                throw new ApiException("Provided Brand and Category already exists. Error on line number: " +count);
+        }
+    }
+
 }
